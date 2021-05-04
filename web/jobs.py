@@ -3,6 +3,7 @@ import uuid
 from hotqueue import HotQueue
 from redis import StrictRedis
 import os
+import time
 
 redis_ip = os.environ.get('REDIS_IP')
 if not redis_ip:
@@ -24,10 +25,11 @@ def _queue_job(bid):
     """Add a job to the redis queue."""
     q.put(bid)
 
-def _update_dict(bid, balance, amount=0):
+def _update_dict(bid, balance, status='complete', amount=0):
     """Update the account dictionary."""
     return {'bid': bid,
             'balance': balance,
+            'status': status,
             'amount': amount}
 
 def can_withdraw(bid, amount):
@@ -54,14 +56,14 @@ def create():
 def deposit(bid, amount):
     """Deposits a given amount."""
     current_balance = float(rd.hget(bid, 'balance'))
-    _update_dict(bid, current_balance, amount)
+    _update_dict(bid, current_balance, 'submitted', amount)
     _queue_job(bid)
 
 def withdraw(bid, amount):
     """Withdraws a given amount."""
     current_balance = float(rd.hget(bid, 'balance'))
     amount *= -1 # needs to be negative
-    _update_dict(bid, current_balance, amount)
+    _update_dict(bid, current_balance, 'submitted', amount)
     _queue_job(bid)
 
 def apply_change(bid):
@@ -70,6 +72,8 @@ def apply_change(bid):
     # amount: positive if deposit, negative if withdrawal
     amount = float(rd.hget(bid, 'amount'))
     new_balance = current_balance + amount
-    _update_dict(bid, new_balance)
+    _update_dict(bid, new_balance, 'pending')
+    time.sleep(10)
+    _update_dict(bid, new_balance, 'complete')
 
 

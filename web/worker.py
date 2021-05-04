@@ -1,10 +1,7 @@
-from jobs import q, update_job_status
-import time
+from jobs import q, apply_change
 
 @q.worker
-def execute_job(jid):
-    update_job_status(jid, 'in progress')
-    time.sleep(15)
-    update_job_status(jid, 'complete')
+def execute_job(bid):
+    apply_change(bid)
 
 execute_job()

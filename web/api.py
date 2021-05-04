@@ -51,7 +51,7 @@ def deposit():
 @app.route('/transaction/withdraw', methods=['GET'])
 def withdraw():
   bid = request.args.get('id', default='', type=str)
-  amount = request.args.get('amount', default=0, type=float)
+  amount = (request.args.get('amount', default=0, type=float))
   if jobs.bid_exists(bid): # make bid_exists() method in jobs.py
     if jobs.can_withdraw(bid,amount): # make can_withdraw() method in jobs.py
       jobs.withdraw(bid,amount) # make withdraw() method in jobs.py
