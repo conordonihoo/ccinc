@@ -15,10 +15,36 @@
         }
     </style>
     <script>
+        var domain = document.location
+
+        var user_id = null;
+
+        // Prompts user to create an account because an account with the specified user_id was not found
+        function promptToCreate(attempted_id) {
+            // ... do something
+        }
+
+        // Attempts to create account using specified user-id
+        function accountCreate() {
+            var attempted_user_id = document.getElementById('user-id').value;
+            var data = fetch(domain + "/create?id='" + attempted_user_id + "'")
+        }
+
+        // Attempts to login using the specified user-id
+        function accountLogin() {
+            var attempted_user_id = document.getElementById('user-id').value;
+            var data = fetch(domain + "/login?id='" + attempted_user_id + "'")
+            if (data == "ACCOUNT NUMBER NOT FOUND") {
+                promptToCreate(attempted_user_id)
+            }
+        }
+
+        // Outputs message to the output pane
         function log_out(msg) {
             document.getElementById('output-pane').innerHTML += "<br>" + msg;
         }
 
+        // Adds amount to account
         function addAmount() {
             amount = document.getElementById('input-amount').value;
             int_amt = parseInt(amount);
@@ -29,15 +55,24 @@
     <title>CC Banking Inc.</title>
 </head>
 <body>
-
+<!-- Separates page into two columns -->
 <div class='flex-container' id='interactive-pane'>
+    <!-- Output pane for displaying output duh -->
     <div id='output-pane' style='width: 600px; height: 550px;'></div>
-    <div>
-        <div id="logged-in-pane" style="visibility = hidden">
-            <div style='font-size: 30px;'> Amount: <input type="text" id="input-amount" onkeyup="" placeholder="$$$"> </div>
-            <div style='font-size: 30px;'> Amount: <input type="text" id="input-amount" onkeyup="" placeholder="$$$"> </div>
-            <button onclick="addAmount()"><a>Add</a></button>
-        </div>
+
+    <!-- First thing visible, prompts user to log in -->
+    <div id="user-pass-pane" style="display: inline;">
+        <div style='font-size: 30px;'> Account Number: <input type="text" id="user-id" onkeyup="" placeholder=""> </div>
+        <button onclick="accountLogin()"><a>Login</a></button>
+        <button onclick="accountCreate()"><a>Create</a></button>
+    </div>
+
+    <!-- Revealed when user logs in -->
+    <div id="logged-in-pane" style="display: none;">
+        <div style='font-size: 30px;'> Amount: <input type="text" id="input-amount" onkeyup="" placeholder="$$$"> </div>
+        <button onclick="addAmount()"><a>Add</a></button>
+    </div>
+
     </div>
 </div>
 </body>
