@@ -50,7 +50,8 @@
         // Submits a deposit to the account
         function depositAmount() {
             amount = document.getElementById('input-amount').value;
-            int_amt = parseInt(amount);
+            float_amt = parseFloat(amount);
+            var data = fetch(domain + "/transaction/deposit?id="+ user_id + "&amount=" + float_amt + "'")
             log_out(int_amt);
         }
 
@@ -81,7 +82,7 @@
         <div id="logged-in-pane" style="display: inline;">
             <!-- Display account that user logged into-->
             <div id="display-id" style="display: inline; font-size: 20px;"> Logged into Account <div id="user-id-display"></div></div>
-            <div style='font-size: 20px;'> Amount: <input type="text" id="input-amount" onkeyup="" placeholder="$$$"> </div>
+            <div style='font-size: 20px;'> Amount: <input type="text" id="input-amount" onkeyup="" placeholder="$0.00"> </div>
             <button onclick="depositAmount()"><a>Deposit</a></button>
             <button onclick="withdrawAmount()"><a>Withdraw</a></button>
         </div>

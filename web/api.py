@@ -10,7 +10,7 @@ def main():
   # We use the HTML file as the template
   return render_template("page.html")
 
-@app.route('/login?id=ID_STRING_HERE', methods=['GET'])
+@app.route('/login', methods=['GET'])
 def login():
   bid = request.args.get('id', default='', type=str)
   if jobs.bid_exists(bid): # make bid_exists() method in jobs.py
@@ -28,7 +28,7 @@ def create():
 def ids():
   return json.dumps(jobs.rd.keys())
 
-@app.route('/delete?id=ID_STRING_HERE', methods=['GET'])
+@app.route('/delete', methods=['GET'])
 def delete():
   bid = request.args.get('id', default='', type=str)
   if jobs.bid_exists(bid): # make bid_exists() method in jobs.py
@@ -37,7 +37,7 @@ def delete():
   else:
     return 'ACCOUNT NUMBER NOT FOUND'
 
-@app.route('/transaction/deposit?id=ID_STRING_HERE&amount=AMOUNT_INT_HERE', methods=['GET'])
+@app.route('/transaction/deposit', methods=['GET'])
 def deposit():
   bid = request.args.get('id', default='', type=str)
   amount = request.args.get('amount', default=0, type=float)
@@ -47,7 +47,7 @@ def deposit():
   else:
     return 'ACCOUNT NUMBER NOT FOUND'
 
-@app.route('/transaction/withdraw?id=ID_STRING_HERE&amount=AMOUNT_INT_HERE', methods=['GET'])
+@app.route('/transaction/withdraw', methods=['GET'])
 def withdraw():
   bid = request.args.get('id', default='', type=str)
   amount = request.args.get('amount', default=0, type=float)
