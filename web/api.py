@@ -1,8 +1,7 @@
 # api.py
 import json
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import jobs
-import redis
 
 app = Flask(__name__)
 
