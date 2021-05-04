@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .flex-container {
+        display: flex;
+        background-color: #c1d5d6;
+        }
+
+        .flex-container > div {
+        background-color: #f1f1f1;
+        margin: 10px;
+        padding: 20px;
+        align-items: center;
+        }
+    </style>
+    <script>
+        function log_out(msg) {
+            document.getElementById('output-pane').innerHTML += "<br>" + msg;
+        }
+
+        function addAmount() {
+            amount = document.getElementById('input-amount').value;
+            int_amt = parseInt(amount);
+            log_out(int_amt)
+        }
+    </script>
+    <meta charset="UTF-8">
+    <title>CC Banking Inc.</title>
+</head>
+<body>
+
+<div class='flex-container' id='interactive-pane'>
+    <div id='output-pane' style='width: 600px; height: 550px;'></div>
+    <div>
+        <div id="logged-in-pane" style="visibility = hidden">
+            <div style='font-size: 30px;'> Amount: <input type="text" id="input-amount" onkeyup="" placeholder="$$$"> </div>
+            <div style='font-size: 30px;'> Amount: <input type="text" id="input-amount" onkeyup="" placeholder="$$$"> </div>
+            <button onclick="addAmount()"><a>Add</a></button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
