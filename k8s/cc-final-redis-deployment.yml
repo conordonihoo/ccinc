@@ -2,30 +2,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: conor-hw7-redis
+  name: cc-final-redis
   labels:
-    username: conor
-    env: hw7
-    app: conor-hw7-redis
+    username: cc
+    env: final
+    app: cc-final-redis
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: conor-hw7-redis
+      app: cc-final-redis
   template:
     metadata:
       labels:
-        username: conor
-        env: hw7
-        app: conor-hw7-redis
+        username: cc
+        env: final
+        app: cc-final-redis
     spec:
       containers:
-        - name: conor-hw7-redis
+        - name: cc-final-redis
           image: redis:5.0.0
           volumeMounts:
-          - name: conor-hw7-data
+          - name: cc-final-data
             mountPath: "/data"
       volumes:
-      - name: conor-hw7-data
+      - name: cc-final-data
         persistentVolumeClaim:
-          claimName: conor-hw7-data
+          claimName: cc-final-data

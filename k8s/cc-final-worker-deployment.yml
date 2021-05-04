@@ -2,25 +2,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: conor-hw7-worker
+  name: cc-final-worker
   labels:
-    username: conor
-    app: conor-hw7-worker
+    username: cc
+    app: cc-final-worker
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: conor-hw7-worker
+      app: cc-final-worker
   template:
     metadata:
       labels:
-        username: conor
-        app: conor-hw7-worker
+        username: cc
+        app: cc-final-worker
     spec:
       containers:
-        - name: conor-hw7-worker
+        - name: cc-final-worker
           imagePullPolicy: Always
-          image: conordonihoo/hw7:1.8
+          image: conordonihoo/coe332final:latest
           command: ["python", "worker.py"]
           env:
           - name: WORKER_IP
@@ -28,4 +28,4 @@ spec:
               fieldRef:
                 fieldPath: status.podIP
           - name: REDIS_IP
-            value: 10.105.233.147
+            value: 10.102.92.99
