@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: conor-hw7-flask-service
+  labels:
+    username: conor
+    env: hw7
+spec:
+  type: ClusterIP
+  selector:
+    app: conor-hw7-flask
+  ports:
+  - name: conor-hw7-flask-service
+    port: 5000
+    targetPort: 5000

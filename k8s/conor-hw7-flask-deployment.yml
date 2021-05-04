@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: conor-hw7-flask
+  labels:
+    username: conor
+    env: hw7
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: conor-hw7-flask
+  template:
+    metadata:
+      labels:
+        username: conor
+        env: hw7
+        app: conor-hw7-flask
+    spec:
+      containers:
+        - name: conor-hw7-flask
+          imagePullPolicy: Always
+          image: conordonihoo/hw7:1.8
+          env:
+          - name: REDIS_IP
+            value: 10.105.233.147
+          - name: FLASK_APP
+            value: "api.py"
+          ports:
+          - name: http
+            containerPort: 5000

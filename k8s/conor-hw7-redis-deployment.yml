@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: conor-hw7-redis
+  labels:
+    username: conor
+    env: hw7
+    app: conor-hw7-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: conor-hw7-redis
+  template:
+    metadata:
+      labels:
+        username: conor
+        env: hw7
+        app: conor-hw7-redis
+    spec:
+      containers:
+        - name: conor-hw7-redis
+          image: redis:5.0.0
+          volumeMounts:
+          - name: conor-hw7-data
+            mountPath: "/data"
+      volumes:
+      - name: conor-hw7-data
+        persistentVolumeClaim:
+          claimName: conor-hw7-data
