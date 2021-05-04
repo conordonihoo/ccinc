@@ -10,53 +10,66 @@ if not redis_ip:
 q = HotQueue("queue", host=redis_ip, port=6379, db=1)
 rd = StrictRedis(host=redis_ip, port=6379, db=0)
 
-def _generate_jid():
-    return str(uuid.uuid4())
+def _generate_bid():
+    """Create a unique banking ID (account number)."""
+    bid = str(uuid.uuid1().int)
+    bid = bid[:12] # banking ID is 12 digits long
+    return bid
 
-def _generate_job_key(jid):
-    return 'job.{}'.format(jid)
+def _save_account(bid, account_dict):
+    """Save an account object in the Redis database."""
+    rd.hmset(bid, account_dict)
 
-def _instantiate_job(jid, wid, status, start, end):
-    if type(jid) == str:
-        return {'id': jid,
-                'worker': wid,
-                'status': status,
-                'start': start,
-                'end': end
-        }
-    return {'id': jid.decode('utf-8'),
-            'worker': wid.decode('utf-8'),
-            'status': status.decode('utf-8'),
-            'start': start.decode('utf-8'),
-            'end': end.decode('utf-8')
-    }
-
-def _save_job(job_key, job_dict):
-    """Save a job object in the Redis database."""
-    rd.hmset(job_key, job_dict)
-
-def _queue_job(jid):
+def _queue_job(bid):
     """Add a job to the redis queue."""
-    q.put(jid)
+    q.put(bid)
 
-def add_job(start, end, status="submitted"):
-    """Add a job to the redis queue."""
-    jid = _generate_jid()
-    wid = 'none'
-    job_dict = _instantiate_job(jid, wid, status, start, end)
-    job_key = _generate_job_key(jid)
-    _save_job(job_key, job_dict)
-    _queue_job(jid)
-    return job_dict
+def _update_dict(bid, balance, amount=0):
+    """Update the account dictionary."""
+    return {'bid': bid,
+            'balance': balance,
+            'amount': amount}
 
-def update_job_status(jid, new_status):
-      """Update the status of job with job id `jid` to status `status`."""
-      new_wid = os.environ.get('WORKER_IP')
-      jid, wid, status, start, end = rd.hmget(_generate_job_key(jid), 'id', 'worker', 'status', 'start', 'end')
-      job = _instantiate_job(jid, wid, status, start, end)
-      if job:
-          job['status'] = new_status
-          job['worker'] = new_wid
-          _save_job(_generate_job_key(job['id']), job)
-      else:
-          raise Exception()
+def can_withdraw(bid, amount):
+    """Check if an account holder can withdraw a certain amount."""
+    current_balance = float(rd.hget(bid, 'balance'))
+    if current_balance - amount < 0:
+        return False
+    else:
+        return True
+
+def bid_exists(bid):
+    """Check if a BID exists."""
+    if rd.hgetall(bid) == {}:
+        return True
+    else:
+        return False
+
+def create():
+    """Create a new account."""
+    bid = _generate_bid()
+    account_dict = _update_dict(bid, 100)
+    _save_account(bid, account_dict)
+
+def deposit(bid, amount):
+    """Deposits a given amount."""
+    current_balance = float(rd.hget(bid, 'balance'))
+    _update_dict(bid, current_balance, amount)
+    _queue_job(bid)
+
+def withdraw(bid, amount):
+    """Withdraws a given amount."""
+    current_balance = float(rd.hget(bid, 'balance'))
+    amount *= -1 # needs to be negative
+    _update_dict(bid, current_balance, amount)
+    _queue_job(bid)
+
+def apply_change(bid):
+    """Deposits/Withdraws a certain amount (communicates with worker)."""
+    current_balance = float(rd.hget(bid, 'balance'))
+    # amount: positive if deposit, negative if withdrawal
+    amount = float(rd.hget(bid, 'amount'))
+    new_balance = current_balance + amount
+    _update_dict(bid, new_balance)
+
+
