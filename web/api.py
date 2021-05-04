@@ -1,30 +1,18 @@
 # api.py
 import json
-from flask import Flask, request
+from flask import Flask, render_template
 import jobs
+import redis
 
 app = Flask(__name__)
+rd = redis.StrictRedis(host="10.102.92.99", port=6379, db=1)
 
-@app.route('/status', methods=['GET'])
-def get_status():
-    status_list = []
-    for key in jobs.rd.keys():
-        status_list.append(str(jobs.rd.hgetall(key)))
-    return (json.dumps(status_list) + '\n')
 
-@app.route('/reset', methods=['GET'])
-def reset():
-  for key in jobs.rd.keys():
-    jobs.rd.delete(key)
-  return 'Completed\n'
+@app.route('/')
+def main():
+    # We use the HTML file as the template
+    return render_template("page.html")
 
-@app.route('/jobs', methods=['POST'])
-def jobs_api():
-    try:
-        job = request.get_json(force=True)
-    except Exception as e:
-        return True, json.dumps({'status': "Error", 'message': 'Invalid JSON: {}.'.format(e)})
-    return (json.dumps(jobs.add_job(job['start'], job['end'])) + '\n')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
