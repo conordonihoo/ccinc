@@ -27,7 +27,7 @@
         // Attempts to create account using specified user-id
         function accountCreate() {
             var attempted_user_id = document.getElementById('user-id').value;
-            var data = fetch(domain + "/create?id='" + attempted_user_id + "'");
+            var data = fetch(domain + "/create");
         }
 
         // Attempts to login using the specified user-id
@@ -58,7 +58,8 @@
         // Submits a withdrawal to the account
         function withdrawAmount() {
             amount = document.getElementById('input-amount').value;
-            int_amt = parseInt(amount);
+            float_amt = parseFloat(amount);
+            var data = fetch(domain + "/transaction/withdraw?id="+ user_id + "&amount=" + float_amt + "'")
             log_out(int_amt);
         }
     </script>

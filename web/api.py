@@ -21,6 +21,7 @@ def login():
 @app.route('/create', methods=['GET'])
 def create():
   bid = request.args.get('id', default='', type=str)
+  # this should create an id, not request one
   jobs.create() # make create() method in jobs.py
   return json.dumps(jobs.rd.hget('bid'))
 
