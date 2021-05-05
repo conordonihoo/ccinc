@@ -11,7 +11,6 @@ flask_port = os.environ.get('FLASK_PORT')
 
 @app.route('/')
 def main():
-  # We use the HTML file as the template
   return render_template("page.html")
 
 
@@ -59,8 +58,10 @@ def deposit():
   amount = request.args.get('amount', default=0, type=float)
   if jobs.bid_exists(bid):
     jobs.create_job(bid, amount)
+    print("Depositing ${} into acct {}".format(amount, bid))
     return jobs.rd2.hget(bid, 'balance')
   else:
+    print("Invalid acct# to deposit ${} to acct {}".format(amount, bid))
     return 'ACCOUNT NUMBER NOT FOUND'
 
 
@@ -72,10 +73,13 @@ def withdraw():
   if jobs.bid_exists(bid):
     if jobs.can_withdraw(bid, amount):
       jobs.create_job(bid, amount)
+      print("Withdrawing ${} from acct {}".format(amount, bid))
       return jobs.rd2.hget(bid, 'balance')
     else:
+      print("Invalid funds to withdraw ${} from acct {}".format(amount, bid))
       return 'NOT ENOUGH BALANCE'
   else:
+    print("Invalid acct# to withdraw ${} from acct {}".format(amount, bid))
     return 'ACCOUNT NUMBER NOT FOUND'
 
 
