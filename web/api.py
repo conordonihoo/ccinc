@@ -8,10 +8,12 @@ app = Flask(__name__)
 flask_ip = os.environ.get('FLASK_IP')
 flask_port = os.environ.get('FLASK_PORT')
 
+
 @app.route('/')
 def main():
   # We use the HTML file as the template
   return render_template("page.html")
+
 
 @app.route('/login', methods=['GET'])
 def login():
@@ -24,10 +26,12 @@ def login():
 
 # MAKE GET ROUTE FOR JOBS SIMILAR TO THE GET ROUTE FOR ACCOUNTS ^^^^
 
+
 @app.route('/create', methods=['GET'])
 def create():
   bid = jobs.create_account()
   return json.dumps(jobs.rd2.hgetall(bid))
+
 
 @app.route('/delete', methods=['GET'])
 def delete():
@@ -38,13 +42,16 @@ def delete():
   else:
     return 'ACCOUNT NUMBER NOT FOUND'
 
+
 @app.route('/accountids', methods=['GET'])
 def account_ids():
   return json.dumps(jobs.rd2.keys())
 
+
 @app.route('/jobids', methods=['GET'])
 def job_ids():
   return json.dumps(jobs.rd1.keys())
+
 
 @app.route('/transaction/deposit', methods=['GET'])
 def deposit():
@@ -55,6 +62,7 @@ def deposit():
     return jobs.rd2.hget(bid, 'balance')
   else:
     return 'ACCOUNT NUMBER NOT FOUND'
+
 
 @app.route('/transaction/withdraw', methods=['GET'])
 def withdraw():

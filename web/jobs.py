@@ -4,6 +4,8 @@ from hotqueue import HotQueue
 from redis import StrictRedis
 import os
 import time
+import json
+from datetime import datetime
 
 redis_ip = os.environ.get('REDIS_IP')
 redis_port = os.environ.get('REDIS_PORT')
@@ -36,11 +38,11 @@ def _queue_job(jid):
     """Add a job to the redis queue."""
     q.put(jid)
 
-def _update_account(bid, balance):
+def _update_account(bid, balance, history='[]'):
     """Update the account dictionary."""
     return {'bid': bid,
             'balance': balance,
-            'history': []}
+            'history': history}
 
 def _update_job(jid, bid, timestamp, balance, amount, status):
     """Update the job dictionary."""
@@ -69,7 +71,7 @@ def bid_exists(bid):
 def create_account():
     """Create a new account."""
     bid = _generate_bid()
-    account_dict = _update_account(bid, 100)
+    account_dict = _update_account(bid, 0, history=json.dumps([[str(datetime.now()), 0]]))
     _save_account(bid, account_dict)
     return bid
 
@@ -78,7 +80,7 @@ def create_job(bid, amount):
     jid = _generate_jid()
     # CAMERON PLEASE MAKE THE TIMESTAMP - minutes would work best (type = int)
     # ex: 1am = 60min, 5:30am = 330min, 8:27pm = 1227min
-    timestamp = 0
+    timestamp = str(datetime.now())
     balance = float(rd2.hget(bid, 'balance'))
     job_dict = _update_job(jid, bid, timestamp, balance, amount, 'submitted')
     _save_job(jid, job_dict)
@@ -87,13 +89,15 @@ def create_job(bid, amount):
 def apply_change(jid):
     """Deposits/Withdraws a certain amount (communicates with worker)."""
     bid = rd1.hget(jid,'bid')
-    timestamp = int(rd1.hget(jid, 'timestamp'))
+    timestamp = str(rd1.hget(jid, 'timestamp'))
     balance = float(rd1.hget(jid, 'balance'))
     amount = float(rd1.hget(jid, 'amount'))
+    history = json.loads(rd2.hget(bid, 'history'))
     new_balance = balance + amount
+    history.append([timestamp, new_balance])
     _save_job(jid, _update_job(jid, bid, timestamp, balance, amount, 'pending'))
     time.sleep(20)
-    _save_account = (bid, _update_account(bid, new_balance))
+    _save_account = (bid, _update_account(bid, new_balance, history=json.dumps(history)))
     _save_job(jid, _update_job(jid, bid, timestamp, balance, amount, 'complete'))
 
 
