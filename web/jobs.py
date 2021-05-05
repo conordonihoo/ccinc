@@ -48,7 +48,7 @@ def _update_account(bid, balance, history='[]'):
     """Update the account dictionary."""
     return {'bid': bid,
             'balance': balance,
-            'history': history}
+            'transaction_history': history}
 
 
 def _update_job(jid, bid, timestamp, balance, amount, status):
@@ -81,7 +81,7 @@ def bid_exists(bid):
 def create_account():
     """Create a new account."""
     bid = _generate_bid()
-    account_dict = _update_account(bid, 0, history=json.dumps([[str(datetime.now()), 0]]))
+    account_dict = _update_account(bid, 0, history=json.dumps([{'ts': str(datetime.now()), 'balance': 0}]))
     _save_account(bid, account_dict)
     return bid
 
@@ -102,9 +102,9 @@ def apply_change(jid):
     timestamp = str(rd1.hget(jid, 'timestamp'))
     balance = float(rd1.hget(jid, 'balance'))
     amount = float(rd1.hget(jid, 'amount'))
-    history = json.loads(rd2.hget(bid, 'history'))
+    history = json.loads(rd2.hget(bid, 'transaction_history'))
     new_balance = balance + amount
-    history.append([timestamp, new_balance])
+    history.append({'ts': timestamp, 'balance': new_balance})
     _save_job(jid, _update_job(jid, bid, timestamp, balance, amount, 'pending'))
     print("Updating account information for {}".format(bid))
     _save_account(bid, _update_account(bid, new_balance, history=json.dumps(history)))
