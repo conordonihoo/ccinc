@@ -2,8 +2,11 @@
 import json
 from flask import Flask, render_template, request
 import jobs
+import os
 
 app = Flask(__name__)
+flask_ip = os.environ.get('FLASK_IP')
+flask_port = os.environ.get('FLASK_PORT')
 
 @app.route('/')
 def main():
@@ -14,6 +17,7 @@ def main():
 def login():
   bid = request.args.get('id', default='', type=str)
   if jobs.bid_exists(bid): # make bid_exists() method in jobs.py
+    print("ACCESSING ACCT: " , str(bid))
     return json.dumps(jobs.rd.hgetall(bid))
   else:
     return 'ACCOUNT NUMBER NOT FOUND'
@@ -23,7 +27,7 @@ def create():
   bid = request.args.get('id', default='', type=str)
   # this should create an id, not request one
   jobs.create() # make create() method in jobs.py
-  return json.dumps(jobs.rd.hget('bid'))
+  return json.dumps(jobs.rd.hgetall(bid))
 
 @app.route('/ids', methods=['GET'])
 def ids():
@@ -64,4 +68,4 @@ def withdraw():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host=flask_ip, port=flask_port)

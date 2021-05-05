@@ -6,10 +6,11 @@ import os
 import time
 
 redis_ip = os.environ.get('REDIS_IP')
+redis_port = os.environ.get('REDIS_PORT')
 if not redis_ip:
     raise Exception()
-q = HotQueue("queue", host=redis_ip, port=6379, db=1)
-rd = StrictRedis(host=redis_ip, port=6379, db=0)
+q = HotQueue("queue", host=redis_ip, port=redis_port, db=1)
+rd = StrictRedis(host=redis_ip, port=redis_port, db=0, decode_responses=True)
 
 def _generate_bid():
     """Create a unique banking ID (account number)."""
@@ -42,7 +43,7 @@ def can_withdraw(bid, amount):
 
 def bid_exists(bid):
     """Check if a BID exists."""
-    if rd.hgetall(bid) == {}:
+    if bid in rd.keys():
         return True
     else:
         return False

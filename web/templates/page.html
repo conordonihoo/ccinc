@@ -27,18 +27,23 @@
         // Attempts to create account using specified user-id
         function accountCreate() {
             var attempted_user_id = document.getElementById('user-id').value;
-            var data = fetch(domain + "/create");
+            var raw_data = fetch(domain + "create");
+	    var acct_info = JSON.parse(raw_data);
+	    log_out(JSON.stringify(acct_info))
         }
 
         // Attempts to login using the specified user-id
         function accountLogin() {
             var attempted_user_id = document.getElementById('user-id').value;
-            var data = fetch(domain + "/login?id='" + attempted_user_id + "'")
-            if (data == "ACCOUNT NUMBER NOT FOUND") {
+            var raw_data = fetch(domain + "login?id='" + attempted_user_id + "'");
+	    console.log(raw_data.response)
+	    if (raw_data == "ACCOUNT NUMBER NOT FOUND") {
                 promptToCreate(attempted_user_id);
                 log_out("Login failed.");
             }else{
                 log_out("Logged into: " + attempted_user_id);
+	        acct_info = JSON.parse(raw_data);
+	        log_out(JSON.stringify(acct_info));
             }
         }
 
@@ -51,7 +56,7 @@
         function depositAmount() {
             amount = document.getElementById('input-amount').value;
             float_amt = parseFloat(amount);
-            var data = fetch(domain + "/transaction/deposit?id="+ user_id + "&amount=" + float_amt + "'")
+            var data = fetch(domain + "transaction/deposit?id="+ user_id + "&amount=" + float_amt + "'")
             log_out(int_amt);
         }
 
@@ -59,7 +64,7 @@
         function withdrawAmount() {
             amount = document.getElementById('input-amount').value;
             float_amt = parseFloat(amount);
-            var data = fetch(domain + "/transaction/withdraw?id="+ user_id + "&amount=" + float_amt + "'")
+            var data = fetch(domain + "transaction/withdraw?id="+ user_id + "&amount=" + float_amt + "'")
             log_out(int_amt);
         }
     </script>
@@ -73,14 +78,14 @@
     <div id='output-pane' style='width: 600px; height: 550px;'></div>
     <div>
         <!-- First thing visible, prompts user to log in -->
-        <div id="user-pass-pane" style="display: none;">
+        <div id="user-pass-pane" style="display: inline;">
             <div style='font-size: 30px;'> Account Number: <input type="text" id="user-id" onkeyup="" placeholder=""> </div>
             <button onclick="accountLogin()"><a>Login</a></button>
             <button onclick="accountCreate()"><a>Create</a></button>
         </div>
 
         <!-- Revealed when user logs in -->
-        <div id="logged-in-pane" style="display: inline;">
+        <div id="logged-in-pane" style="display: none;">
             <!-- Display account that user logged into-->
             <div id="display-id" style="display: inline; font-size: 20px;"> Logged into Account <div id="user-id-display"></div></div>
             <div style='font-size: 20px;'> Amount: <input type="text" id="input-amount" onkeyup="" placeholder="$0.00"> </div>
