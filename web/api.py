@@ -18,7 +18,7 @@ def login():
   bid = request.args.get('id', default='', type=str)
   if jobs.bid_exists(bid):
     print("ACCESSING ACCT: " , str(bid))
-    return json.dumps(jobs.rd.hgetall(bid))
+    return json.dumps(jobs.rd2.hgetall(bid))
   else:
     return 'ACCOUNT NUMBER NOT FOUND'
 
@@ -52,7 +52,7 @@ def deposit():
   amount = request.args.get('amount', default=0, type=float)
   if jobs.bid_exists(bid):
     jobs.create_job(bid, amount)
-    return ('Balance: ' + jobs.rd.hget(bid, 'balance'))
+    return jobs.rd2.hget(bid, 'balance')
   else:
     return 'ACCOUNT NUMBER NOT FOUND'
 
@@ -64,7 +64,7 @@ def withdraw():
   if jobs.bid_exists(bid):
     if jobs.can_withdraw(bid, amount):
       jobs.create_job(bid, amount)
-      return ('Balance: ' + jobs.rd.hget(bid, 'balance'))
+      return jobs.rd2.hget(bid, 'balance')
     else:
       return 'NOT ENOUGH BALANCE'
   else:

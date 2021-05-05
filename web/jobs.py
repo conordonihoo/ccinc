@@ -39,9 +39,10 @@ def _queue_job(jid):
 def _update_account(bid, balance):
     """Update the account dictionary."""
     return {'bid': bid,
-            'balance': balance}
+            'balance': balance,
+            'history': []}
 
-def _update_job(jid, bid, timestamp, balance, amount, status)
+def _update_job(jid, bid, timestamp, balance, amount, status):
     """Update the job dictionary."""
     return {'jid': jid,
             'bid': bid,

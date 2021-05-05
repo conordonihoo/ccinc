@@ -16,12 +16,19 @@
     </style>
     <script>
         var domain = document.location
-        var user_id = null;
         var acct_info = {};
 
         // Prompts user to create an account because an account with the specified user_id was not found
         function promptToCreate(attempted_id) {
             alert("Account with Number: " + attempted_id + " doesn't exist. Try a different number or create a new account!")
+        }
+
+        // Loads account info into login pane and displays
+        function switchToLoginPane() {
+            document.getElementById('logged-in-pane').style.display = "inline";
+            document.getElementById('user-pass-pane').style.display = "none";
+            console.log("Logged in. Switching to logged-in pane.");
+            document.getElementById('user-id-display').innerHTML = acct_info["bid"];
         }
 
         // Attempts to create account using specified user-id
@@ -30,8 +37,9 @@
             var url = (domain + "create");
 	        fetch(url).then(function(response) {
                 return response.text().then(function(acct_info_s) {
-                    console.log(acct_info_s)
-                    acct_info = JSON.parse(acct_info_s)
+                    console.log(acct_info_s);
+                    acct_info = JSON.parse(acct_info_s);
+                    switchToLoginPane();
                 });
             });
         }
@@ -39,7 +47,7 @@
         // Attempts to login using the specified user-id
         function accountLogin() {
             var attempted_user_id = document.getElementById('user-id').value;
-            var url = (domain + "login?id='" + attempted_user_id + "'");
+            var url = (domain + "login?id=" + attempted_user_id + "");
 
             fetch(url).then(function(response) {
                 return response.text().then(function(acct_info_s) {
@@ -48,9 +56,30 @@
                         promptToCreate(attempted_user_id)
                     }else{
                         acct_info = JSON.parse(acct_info_s)
+                        switchToLoginPane();
                     }
                 });
             });
+        }
+
+        // Logs out of account currently logged into
+        function accountLogout() {
+            document.getElementById('logged-in-pane').style.display = "none";
+            document.getElementById('user-pass-pane').style.display = "inline";
+            console.log("Logging out..");
+            acct_info = {};
+        }
+
+        // Closes account currently logged into
+        var prompted = false;
+        function accountClose() {
+            if (!prompted){
+                alert("Closing your account will delete all data associated with this account number. Press 'Close Account' again to confirm your action.");
+                prompted = true;
+            }else{
+                console.log("Closing account..");
+                acct_info = {};
+            }
         }
 
         // Outputs message to the output pane
@@ -62,10 +91,11 @@
         function depositAmount() {
             amount = document.getElementById('input-amount').value;
             float_amt = parseFloat(amount);
-            var url = (domain + "transaction/deposit?id="+ user_id + "&amount=" + float_amt + "'")
+            var url = (domain + "transaction/deposit?id="+ acct_info["bid"] + "&amount=" + float_amt)
             fetch(url).then(function(response) {
                 return response.text().then(function(acct_info_s) {
-                    console.log(acct_info_s)
+                    balance = JSON.parse(acct_info_s)
+                    console.log(balance)
                 });
             });
         }
@@ -74,7 +104,7 @@
         function withdrawAmount() {
             amount = document.getElementById('input-amount').value;
             float_amt = parseFloat(amount);
-            var url = fetch(domain + "transaction/withdraw?id="+ user_id + "&amount=" + float_amt + "'")
+            var url = domain + "transaction/withdraw?id="+ acct_info["bid"] + "&amount=" + float_amt
             fetch(url).then(function(response) {
                 return response.text().then(function(acct_info_s) {
                     console.log(acct_info_s)
@@ -88,25 +118,33 @@
 <body>
 <!-- Separates page into two columns -->
 <div class='flex-container' id='interactive-pane'>
-    <!-- Output pane for displaying output duh -->
-    <div id='output-pane' style='width: 600px; height: 550px;'></div>
     <div>
         <!-- First thing visible, prompts user to log in -->
         <div id="user-pass-pane" style="display: inline;">
             <div style='font-size: 30px;'> Account Number: <input type="text" id="user-id" onkeyup="" placeholder=""> </div>
             <button onclick="accountLogin()"><a>Login</a></button>
-            <button onclick="accountCreate()"><a>Create</a></button>
+            <button onclick="accountCreate()"><a>Create New Account</a></button>
         </div>
 
         <!-- Revealed when user logs in -->
         <div id="logged-in-pane" style="display: none;">
             <!-- Display account that user logged into-->
-            <div id="display-id" style="display: inline; font-size: 20px;"> Logged into Account <div id="user-id-display"></div></div>
+            <div id="display-id" style="display: inline; font-size: 16px;"> Logged into Account <div id="user-id-display" style="font-weight: bold;"></div></div>
+            <br>
+            <div style='font-size: 20px;' id="balance-display"> </div>
+            <br>
             <div style='font-size: 20px;'> Amount: <input type="text" id="input-amount" onkeyup="" placeholder="$0.00"> </div>
             <button onclick="depositAmount()"><a>Deposit</a></button>
             <button onclick="withdrawAmount()"><a>Withdraw</a></button>
+            <br>
+            <br>
+            <button onclick="accountLogout()"><a>Logout</a></button>
+            <button onclick="accountClose()"><a>Close Account</a></button>
         </div>
     </div>
+
+    <!-- Output pane for displaying output duh -->
+    <div id='output-pane' style='width: 600px; height: 550px;'></div>
 
     </div>
 </div>
