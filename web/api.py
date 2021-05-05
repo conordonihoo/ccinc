@@ -16,39 +16,43 @@ def main():
 @app.route('/login', methods=['GET'])
 def login():
   bid = request.args.get('id', default='', type=str)
-  if jobs.bid_exists(bid): # make bid_exists() method in jobs.py
+  if jobs.bid_exists(bid):
     print("ACCESSING ACCT: " , str(bid))
     return json.dumps(jobs.rd.hgetall(bid))
   else:
     return 'ACCOUNT NUMBER NOT FOUND'
 
+# MAKE GET ROUTE FOR JOBS SIMILAR TO THE GET ROUTE FOR ACCOUNTS ^^^^
+
 @app.route('/create', methods=['GET'])
 def create():
-  bid = request.args.get('id', default='', type=str)
-  # this should create an id, not request one
-  jobs.create() # make create() method in jobs.py
-  return json.dumps(jobs.rd.hgetall(bid))
-
-@app.route('/ids', methods=['GET'])
-def ids():
-  return json.dumps(jobs.rd.keys())
+  bid = jobs.create_account()
+  return json.dumps(jobs.rd2.hgetall(bid))
 
 @app.route('/delete', methods=['GET'])
 def delete():
   bid = request.args.get('id', default='', type=str)
-  if jobs.bid_exists(bid): # make bid_exists() method in jobs.py
-    jobs.rd.delete(bid)
+  if jobs.bid_exists(bid):
+    jobs.rd2.delete(bid)
     return 'completed'
   else:
     return 'ACCOUNT NUMBER NOT FOUND'
+
+@app.route('/accountids', methods=['GET'])
+def account_ids():
+  return json.dumps(jobs.rd2.keys())
+
+@app.route('/jobids', methods=['GET'])
+def job_ids():
+  return json.dumps(jobs.rd1.keys())
 
 @app.route('/transaction/deposit', methods=['GET'])
 def deposit():
   bid = request.args.get('id', default='', type=str)
   amount = request.args.get('amount', default=0, type=float)
-  if jobs.bid_exists(bid): # make bid_exists() method in jobs.py
-    jobs.deposit(bid,amount) # make deposit() method in jobs.py
-    return ('Balance: ' + jobs.rd.hget(bid,'balance'))
+  if jobs.bid_exists(bid):
+    jobs.create_job(bid, amount)
+    return ('Balance: ' + jobs.rd.hget(bid, 'balance'))
   else:
     return 'ACCOUNT NUMBER NOT FOUND'
 
@@ -56,10 +60,11 @@ def deposit():
 def withdraw():
   bid = request.args.get('id', default='', type=str)
   amount = (request.args.get('amount', default=0, type=float))
-  if jobs.bid_exists(bid): # make bid_exists() method in jobs.py
-    if jobs.can_withdraw(bid,amount): # make can_withdraw() method in jobs.py
-      jobs.withdraw(bid,amount) # make withdraw() method in jobs.py
-      return ('Balance: ' + jobs.rd.hget(bid,'balance'))
+  amount *= -1 # needs to be negative
+  if jobs.bid_exists(bid):
+    if jobs.can_withdraw(bid, amount):
+      jobs.create_job(bid, amount)
+      return ('Balance: ' + jobs.rd.hget(bid, 'balance'))
     else:
       return 'NOT ENOUGH BALANCE'
   else:
