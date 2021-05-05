@@ -16,35 +16,41 @@
     </style>
     <script>
         var domain = document.location
-
         var user_id = null;
+        var acct_info = {};
 
         // Prompts user to create an account because an account with the specified user_id was not found
         function promptToCreate(attempted_id) {
-            // ... do something
+            alert("Account with Number: " + attempted_id + " doesn't exist. Try a different number or create a new account!")
         }
 
         // Attempts to create account using specified user-id
         function accountCreate() {
             var attempted_user_id = document.getElementById('user-id').value;
-            var raw_data = fetch(domain + "create");
-	    var acct_info = JSON.parse(raw_data);
-	    log_out(JSON.stringify(acct_info))
+            var url = (domain + "create");
+	        fetch(url).then(function(response) {
+                return response.text().then(function(acct_info_s) {
+                    console.log(acct_info_s)
+                    acct_info = JSON.parse(acct_info_s)
+                });
+            });
         }
 
         // Attempts to login using the specified user-id
         function accountLogin() {
             var attempted_user_id = document.getElementById('user-id').value;
-            var raw_data = fetch(domain + "login?id='" + attempted_user_id + "'");
-	    console.log(raw_data.response)
-	    if (raw_data == "ACCOUNT NUMBER NOT FOUND") {
-                promptToCreate(attempted_user_id);
-                log_out("Login failed.");
-            }else{
-                log_out("Logged into: " + attempted_user_id);
-	        acct_info = JSON.parse(raw_data);
-	        log_out(JSON.stringify(acct_info));
-            }
+            var url = (domain + "login?id='" + attempted_user_id + "'");
+
+            fetch(url).then(function(response) {
+                return response.text().then(function(acct_info_s) {
+                    console.log(acct_info_s)
+                    if (acct_info_s == "ACCOUNT NUMBER NOT FOUND"){
+                        promptToCreate(attempted_user_id)
+                    }else{
+                        acct_info = JSON.parse(acct_info_s)
+                    }
+                });
+            });
         }
 
         // Outputs message to the output pane
@@ -56,16 +62,24 @@
         function depositAmount() {
             amount = document.getElementById('input-amount').value;
             float_amt = parseFloat(amount);
-            var data = fetch(domain + "transaction/deposit?id="+ user_id + "&amount=" + float_amt + "'")
-            log_out(int_amt);
+            var url = (domain + "transaction/deposit?id="+ user_id + "&amount=" + float_amt + "'")
+            fetch(url).then(function(response) {
+                return response.text().then(function(acct_info_s) {
+                    console.log(acct_info_s)
+                });
+            });
         }
 
         // Submits a withdrawal to the account
         function withdrawAmount() {
             amount = document.getElementById('input-amount').value;
             float_amt = parseFloat(amount);
-            var data = fetch(domain + "transaction/withdraw?id="+ user_id + "&amount=" + float_amt + "'")
-            log_out(int_amt);
+            var url = fetch(domain + "transaction/withdraw?id="+ user_id + "&amount=" + float_amt + "'")
+            fetch(url).then(function(response) {
+                return response.text().then(function(acct_info_s) {
+                    console.log(acct_info_s)
+                });
+            });
         }
     </script>
     <meta charset="UTF-8">

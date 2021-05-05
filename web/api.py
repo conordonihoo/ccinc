@@ -66,6 +66,5 @@ def withdraw():
     return 'ACCOUNT NUMBER NOT FOUND'
 
 
-
 if __name__ == '__main__':
-    app.run(debug=True, host=flask_ip, port=flask_port)
+    app.run(debug=True, host='localhost', port=5000)

@@ -8,9 +8,10 @@ import time
 redis_ip = os.environ.get('REDIS_IP')
 redis_port = os.environ.get('REDIS_PORT')
 if not redis_ip:
-    raise Exception()
-q = HotQueue("queue", host=redis_ip, port=redis_port, db=1)
-rd = StrictRedis(host=redis_ip, port=redis_port, db=0, decode_responses=True)
+    pass
+    #raise Exception()
+q = HotQueue("queue", host='localhost', port=6387, db=1)
+rd = StrictRedis(host='localhost', port=6387, db=0, decode_responses=True)
 
 def _generate_bid():
     """Create a unique banking ID (account number)."""
