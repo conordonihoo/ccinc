@@ -12,10 +12,10 @@ redis_port = os.environ.get('REDIS_PORT')
 if not redis_ip:
     pass
     #raise Exception()
-q = HotQueue("queue", host='localhost', port=6387, db=0) # queue
 rd1 = StrictRedis(host='localhost', port=6387, db=1, decode_responses=True) # jobs
 rd2 = StrictRedis(host='localhost', port=6387, db=2, decode_responses=True) # accounts
-
+q1 = HotQueue("queue", host='localhost', port=6387, db=3) # transaction queue
+q2 = HotQueue("queue", host='localhost', port=6387, db=4) # graph queue
 
 def _generate_bid():
     """Create a unique banking ID (account number)."""
@@ -41,7 +41,8 @@ def _save_job(jid, job_dict):
 
 def _queue_job(jid):
     """Add a job to the redis queue."""
-    q.put(jid)
+    q1.put(jid)
+    q2.put(jid)
 
 
 def _update_account(bid, balance, history='[]'):
@@ -96,7 +97,7 @@ def create_job(bid, amount):
     _queue_job(jid)
 
 
-def apply_change(jid):
+def transaction_change(jid):
     """Deposits/Withdraws a certain amount (communicates with worker)."""
     bid = rd1.hget(jid, 'bid')
     timestamp = str(rd1.hget(jid, 'timestamp'))
@@ -111,3 +112,6 @@ def apply_change(jid):
     _save_job(jid, _update_job(jid, bid, timestamp, balance, amount, 'complete'))
 
 
+def graph_change(jid):
+    """Adds a data point and adjusts the prediction function on the graph (communicates with worker)."""
+    # add code here

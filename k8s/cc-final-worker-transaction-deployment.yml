@@ -2,26 +2,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cc-final-worker
+  name: cc-final-worker-transaction
   labels:
     username: cc
-    app: cc-final-worker
+    app: cc-final-worker-transaction
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cc-final-worker
+      app: cc-final-worker-transaction
   template:
     metadata:
       labels:
         username: cc
-        app: cc-final-worker
+        app: cc-final-worker-transaction
     spec:
       containers:
-        - name: cc-final-worker
+        - name: cc-final-worker-transaction
           imagePullPolicy: Always
           image: conordonihoo/coe332final:latest
-          command: ["python", "worker.py"]
+          command: ["python", "worker_transaction.py"]
           env:
           - name: WORKER_IP
             valueFrom:

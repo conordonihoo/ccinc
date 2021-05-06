@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cc-final-worker-graph
+  labels:
+    username: cc
+    app: cc-final-worker-graph
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cc-final-worker-graph
+  template:
+    metadata:
+      labels:
+        username: cc
+        app: cc-final-worker-graph
+    spec:
+      containers:
+        - name: cc-final-worker-graph
+          imagePullPolicy: Always
+          image: conordonihoo/coe332final:latest
+          command: ["python", "worker_graph.py"]
+          env:
+          - name: WORKER_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: REDIS_IP
+            value: 10.102.92.99
