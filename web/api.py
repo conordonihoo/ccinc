@@ -83,13 +83,6 @@ def deposit():
     print("Invalid acct# to deposit ${} to acct {}".format(amount, bid))
     return 'ACCOUNT NUMBER NOT FOUND'
 
-
-@app.route('/user/bind', methods=['POST', 'GET'])
-def bind_user():
-  """Binds custom user ID to an account ID"""
-
-
-
 @app.route('/transaction/withdraw', methods=['GET'])
 def withdraw():
   bid = request.args.get('id', default='', type=str)
