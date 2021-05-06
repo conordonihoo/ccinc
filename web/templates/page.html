@@ -35,7 +35,7 @@
             document.getElementById('output-pane').style.display = "inline";
             document.getElementById('output-graphs').style.display = "inline";
             document.getElementById('account-ids-pane').style.display = "none";
-
+            document.getElementById('title-pane').style.display = "none";
             console.log("Switching to logged-in pane.");
         }
 
@@ -102,6 +102,8 @@
             document.getElementById('output-pane').style.display = "none";
             document.getElementById('output-graphs').style.display = "none";
             document.getElementById('account-ids-pane').style.display = "inline";
+            document.getElementById('title-pane').style.display = "inline";
+
             console.log("Logging out..");
             acct_info = {};
         }
@@ -197,6 +199,16 @@
     <!-- First thing visible, displays account ids -->
     <div id="account-ids-pane" style="display: inline; overflow: auto; width: 300px; height: 300px;">
         <table id="account-ids-table"></table>
+    </div>
+
+    <!-- First thing visible, gives brief description -->
+    <div id="title-pane" style="display: inline; overflow: auto; width: 500px; height: 300px;">
+        <h1>Welcome to the CC Banking Portal</h1>
+        At CC Banking, we strive to provide the simplest analysis of your completely legitimate assets.
+        Making money is as simple as pressing a button! Sleep peacefully knowing that your 100% authentic, vibranium-backed digital
+        dollaroos are stored securely on our servers, accessible only to those who know the 12-digit account ID. Trust CC Banking to
+        make money-making as stress-free as humanly possible.
+        <h4><i>CC Banking Incorporated. Where your money is not our priority.</i></h4>
     </div>
 
     <!-- Output pane for displaying output duh -->
