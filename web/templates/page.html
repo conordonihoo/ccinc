@@ -3,15 +3,15 @@
 <head>
     <style>
         .flex-container {
-        display: flex;
-        background-color: #c1d5d6;
+            display: flex;
+            background-color: #c1d5d6;
         }
 
         .flex-container > div {
-        background-color: #f1f1f1;
-        margin: 10px;
-        padding: 20px;
-        align-items: center;
+            background-color: #f1f1f1;
+            margin: 10px;
+            padding: 20px;
+            align-items: center;
         }
 
         table, th, td {
@@ -32,6 +32,8 @@
         function switchToLoggedInPane() {
             document.getElementById('logged-in-pane').style.display = "inline";
             document.getElementById('user-pass-pane').style.display = "none";
+            document.getElementById('output-pane').style.display = "inline";
+            document.getElementById('output-graphs').style.display = "inline";
             console.log("Switching to logged-in pane.");
         }
 
@@ -44,7 +46,7 @@
                     console.log("account_info" + acct_info_s)
                     acct_info = JSON.parse(acct_info_s);
                     document.getElementById('user-id-display').innerHTML = acct_info["bid"];
-                    document.getElementById('transaction-history').innerHTML = "<th>Time</th> <th>Amount</th>";
+                    document.getElementById('transaction-history').innerHTML = "";
                     for (i = 0; i < JSON.parse(acct_info["transaction_history"]).length; i++){
                         var row = document.getElementById('transaction-history').insertRow(i);
                         var ts = row.insertCell(0);
@@ -52,8 +54,10 @@
                         ts.innerHTML = JSON.parse(acct_info["transaction_history"])[i]["ts"];
                         balance.innerHTML = "$" + JSON.parse(acct_info["transaction_history"])[i]["balance"];
                     }
+                    document.getElementById('transaction-history').innerHTML += "<thead><tr><th>Time</th> <th>Amount</th></tr></thead>";
                 });
             });
+            document.getElementById('spending-graph').src = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png";
         }
 
         // Attempts to create account using specified user-id
@@ -90,6 +94,8 @@
         function accountLogout() {
             document.getElementById('logged-in-pane').style.display = "none";
             document.getElementById('user-pass-pane').style.display = "inline";
+            document.getElementById('output-pane').style.display = "none";
+            document.getElementById('output-graphs').style.display = "none";
             console.log("Logging out..");
             acct_info = {};
         }
@@ -186,11 +192,47 @@
     </div>
 
     <!-- Output pane for displaying output duh -->
-    <div id='output-pane' style='width: 600px; height: 550px; overflow: auto;'>
+    <div id='output-pane' style='width: 300px; height: 350px; overflow: auto; display: none'>
         <table id="transaction-history"></table>
     </div>
 
+    <!-- Output pane for displaying graphs -->
+    <div id='output-graphs' style='width: 300px; height: 350px; overflow: auto; display: none'>
+        <img id="spending-graph">
     </div>
 </div>
+<table id='jobs-display'></table>
 </body>
+<script>
+    // Updates table displaying jobs and their statuses
+    function updateJobsDisplay() {
+        document.getElementById('jobs-display').innerHTML = '';
+        var num_jobs_to_display = 10;
+        for (i = 0; i < num_jobs_to_display; i++){
+            var row = document.getElementById('jobs-display').insertRow(i);
+            var job_id = row.insertCell(0);
+            var job_type = row.insertCell(1);
+            var account_id = row.insertCell(2);
+            var status = row.insertCell(3);
+            job_id.innerHTML = Math.floor(Math.random() * 100000000);
+            job_type.innerHTML = "Transaction";
+            account_id.innerHTML = Math.floor(Math.random() * 100000000);
+            status.innerHTML = "Pending";
+        }
+        document.getElementById('jobs-display').innerHTML += "<thead><tr><th>Job ID</th> <th>Job Type</th> <th>Account ID</th> <th>Status</th></tr> </thead>";
+    }
+    // Creates delay for loop
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Update loop for jobs table
+    async function loopJobsDisplay() {
+        while (true){
+            updateJobsDisplay();
+            await sleep(1000)
+        }
+    }
+    loopJobsDisplay();
+</script>
 </html>
