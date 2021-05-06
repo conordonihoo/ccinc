@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
 import json
+import numpy as np
+from polyreg import polyreg
 from datetime import datetime
 redis_ip = os.environ.get('REDIS_IP')
 redis_port = os.environ.get('REDIS_PORT')
@@ -170,3 +172,28 @@ def get_spending_graph(bid):
     _queue_graph_job(jid)
     time.sleep(2)
     return rd3.hget(jid, "image")
+
+
+def model_account():
+    xdata = list(range(0,24)) # hours
+    ydata = [15, 12, 6, 3, 5, 10, 20, 38, 29, 22, 27, 40, 
+            62, 52, 39, 25, 20, 24, 40, 46, 38, 33, 27, 21] # number of transactions
+    
+    # interpret data as 7th order polynomial
+    c = polyreg(xdata, ydata, 7)
+    # prediction function
+    f = lambda v : c[0] + c[1]*(v) + c[2]*(v**2) + c[3]*(v**3) + c[4]*(v**4) + c[5]*(v**5) + c[6]*(v**6) + c[7]*(v**7)
+    # predicted y-values after regression
+    ypred = f(np.array(xdata))
+
+    #plotting
+    figure, figure_axis = plt.subplots()
+    figure_axis.set_xlabel("Hours")
+    figure_axis.set_ylabel("Number of Transactions")
+    # (using this url for bar graph https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.bar.html#matplotlib.pyplot.bar)
+    plt.bar(xdata,ydata,width=0.8,bottom=0,align='center') # bar graph
+    # (using this url for normal line)
+    plt.plot(xdata, ypred, color='red') # prediction function
+
+
+
