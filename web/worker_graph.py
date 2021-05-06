@@ -1,10 +1,10 @@
-from jobs import q2, graph_change
+from jobs import q2, generate_spending_graph
 
 
 @q2.worker
 def execute_job(jid):
     print("Processing graphing job {}".format(jid))
-    graph_change(jid)
+    generate_spending_graph(jid)
 
 execute_job()
 

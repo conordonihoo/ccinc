@@ -34,6 +34,8 @@
             document.getElementById('user-pass-pane').style.display = "none";
             document.getElementById('output-pane').style.display = "inline";
             document.getElementById('output-graphs').style.display = "inline";
+            document.getElementById('account-ids-pane').style.display = "none";
+
             console.log("Switching to logged-in pane.");
         }
 
@@ -41,6 +43,8 @@
         function updateAcctInfoDisplay(user_id) {
             var url = (domain + "login?id=" + user_id);
             console.log("Pulling account info for " + user_id);
+            document.getElementById('output-graphs').innerHTML = "placeholder";
+
 	        fetch(url).then(function(response) {
                 return response.text().then(function(acct_info_s) {
                     console.log("account_info" + acct_info_s)
@@ -57,7 +61,8 @@
                     document.getElementById('transaction-history').innerHTML += "<thead><tr><th>Time</th> <th>Amount</th></tr></thead>";
                 });
             });
-            document.getElementById('spending-graph').src = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png";
+            var img_url = (domain + "graph/spending?id=" + user_id + "&rand=" + Math.floor(Math.random() * 1000));
+            document.getElementById('output-graphs').innerHTML = "<img id=" + '"spending-graph" src="' + img_url + '">';
         }
 
         // Attempts to create account using specified user-id
@@ -84,7 +89,7 @@
                         promptToCreate(attempted_user_id)
                     }else{
                         updateAcctInfoDisplay(attempted_user_id);
-                        switchToLoginPane();
+                        switchToLoggedInPane();
                     }
                 });
             });
@@ -96,6 +101,7 @@
             document.getElementById('user-pass-pane').style.display = "inline";
             document.getElementById('output-pane').style.display = "none";
             document.getElementById('output-graphs').style.display = "none";
+            document.getElementById('account-ids-pane').style.display = "inline";
             console.log("Logging out..");
             acct_info = {};
         }
@@ -136,7 +142,6 @@
             fetch(url).then(function(response) {
                 return response.text().then(function(acct_info_s) {
                     balance = JSON.parse(acct_info_s);
-                    console.log(balance);
                     updateAcctInfoDisplay(acct_info["bid"]);
                 });
             });
@@ -154,7 +159,6 @@
             var url = domain + "transaction/withdraw?id="+ acct_info["bid"] + "&amount=" + float_amt;
             fetch(url).then(function(response) {
                 return response.text().then(function(acct_info_s) {
-                    console.log(acct_info_s);
                     updateAcctInfoDisplay(acct_info["bid"]);
                 });
             });
@@ -173,7 +177,6 @@
             <button onclick="accountLogin()"><a>Login</a></button>
             <button onclick="accountCreate()"><a>Create New Account</a></button>
         </div>
-
         <!-- Revealed when user logs in -->
         <div id="logged-in-pane" style="display: none;">
             <!-- Display account that user logged into-->
@@ -191,46 +194,78 @@
         </div>
     </div>
 
+    <!-- First thing visible, displays account ids -->
+    <div id="account-ids-pane" style="display: inline; overflow: auto; width: 300px; height: 300px;">
+        <table id="account-ids-table"></table>
+    </div>
+
     <!-- Output pane for displaying output duh -->
-    <div id='output-pane' style='width: 300px; height: 350px; overflow: auto; display: none'>
+    <div id='output-pane' style='width: 300px; height: 500px; overflow: auto; display: none'>
         <table id="transaction-history"></table>
     </div>
 
     <!-- Output pane for displaying graphs -->
-    <div id='output-graphs' style='width: 300px; height: 350px; overflow: auto; display: none'>
+    <div id='output-graphs' style='width: 700px; height: 500px; overflow: auto; display: none'>
         <img id="spending-graph">
     </div>
 </div>
-<table id='jobs-display'></table>
+<table id="jobs-display-loading" style="display: none"></table>
+<table id='jobs-display'><thead><tr><th>Job ID</th> <th>Job Type</th> <th>Account ID</th> <th>Status</th></tr> </thead></table>
 </body>
 <script>
     // Updates table displaying jobs and their statuses
     function updateJobsDisplay() {
-        document.getElementById('jobs-display').innerHTML = '';
-        var num_jobs_to_display = 10;
-        for (i = 0; i < num_jobs_to_display; i++){
-            var row = document.getElementById('jobs-display').insertRow(i);
-            var job_id = row.insertCell(0);
-            var job_type = row.insertCell(1);
-            var account_id = row.insertCell(2);
-            var status = row.insertCell(3);
-            job_id.innerHTML = Math.floor(Math.random() * 100000000);
-            job_type.innerHTML = "Transaction";
-            account_id.innerHTML = Math.floor(Math.random() * 100000000);
-            status.innerHTML = "Pending";
-        }
-        document.getElementById('jobs-display').innerHTML += "<thead><tr><th>Job ID</th> <th>Job Type</th> <th>Account ID</th> <th>Status</th></tr> </thead>";
+        var url = (domain + "jobs");
+        document.getElementById('jobs-display-loading').innerHTML = '';
+        fetch(url).then(function(response) {
+            return response.text().then(function(jobs_s) {
+                var jobs = JSON.parse(jobs_s);
+                for (i = 0; i < jobs.length; i++){
+                    job = jobs[i]
+                    var row = document.getElementById('jobs-display-loading').insertRow(i);
+                    var job_id = row.insertCell(0);
+                    var job_type = row.insertCell(1);
+                    var account_id = row.insertCell(2);
+                    var status = row.insertCell(3);
+                    job_id.innerHTML = job["jid"];
+                    job_type.innerHTML = job["type"];
+                    account_id.innerHTML = job["bid"];
+                    status.innerHTML = job["status"];
+                }
+            });
+        });
     }
+
+    function updateAccountIDs(){
+        var url = (domain + "accountids");
+        document.getElementById('account-ids-table').innerHTML = '';
+        fetch(url).then(function(response) {
+            return response.text().then(function(ids_s) {
+                var ids = JSON.parse(ids_s);
+                for (i = 0; i < ids.length; i++){
+                    id = ids[i];
+                    var row = document.getElementById('account-ids-table').insertRow(i);
+                    var idr = row.insertCell(0);
+                    idr.innerHTML = id;
+                }
+                document.getElementById('account-ids-table').innerHTML += '<thead><tr><th>Account IDs</th></tr></thead>';
+            });
+        });
+    }
+
     // Creates delay for loop
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // Update loop for jobs table
+    // Update loop for jobs table and account ids
     async function loopJobsDisplay() {
         while (true){
+            updateAccountIDs();
             updateJobsDisplay();
-            await sleep(1000)
+            await sleep(10000);
+            document.getElementById('jobs-display').innerHTML = document.getElementById('jobs-display-loading').innerHTML;
+            document.getElementById('jobs-display').innerHTML += "<thead><tr><th>Job ID</th> <th>Job Type</th> <th>Account ID</th> <th>Status</th></tr> </thead>";
         }
     }
     loopJobsDisplay();

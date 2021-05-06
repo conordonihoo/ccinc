@@ -1,13 +1,14 @@
 # api.py
 import json
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 import jobs
 import os
+import os.path as path
 
 app = Flask(__name__)
 flask_ip = os.environ.get('FLASK_IP')
 flask_port = os.environ.get('FLASK_PORT')
-
+app.config['UPLOAD_FOLDER'] = "."
 
 @app.route('/')
 def main():
@@ -23,13 +24,11 @@ def login():
   else:
     return 'ACCOUNT NUMBER NOT FOUND'
 
-# MAKE GET ROUTE FOR JOBS SIMILAR TO THE GET ROUTE FOR ACCOUNTS ^^^^
-
 
 @app.route('/create', methods=['GET'])
 def create():
   bid = jobs.create_account()
-  return json.dumps(jobs.rd2.hgetall(bid))
+  return jobs.rd2.hgetall(bid)
 
 
 @app.route('/delete', methods=['GET'])
@@ -52,6 +51,26 @@ def job_ids():
   return json.dumps(jobs.rd1.keys())
 
 
+@app.route('/jobs', methods=['GET'])
+def get_jobs():
+  job_list = []
+  for key in jobs.rd4.keys():
+    job_list.append(jobs.rd4.hgetall(key))
+  jobs.rd4.flushdb()
+  return json.dumps(job_list)
+
+
+@app.route('/graph/spending', methods=['GET'])
+def get_spending_graph():
+  bid = request.args.get('id', default='', type=str)
+  # Extra random data for clearing the cache
+  rand = request.args.get('rand', default='', type=str)
+  file_path = jobs.get_spending_graph(bid)
+  uploads = path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+  ret = send_from_directory(directory=uploads, filename=file_path)
+  return ret
+
+
 @app.route('/transaction/deposit', methods=['GET'])
 def deposit():
   bid = request.args.get('id', default='', type=str)
@@ -63,6 +82,12 @@ def deposit():
   else:
     print("Invalid acct# to deposit ${} to acct {}".format(amount, bid))
     return 'ACCOUNT NUMBER NOT FOUND'
+
+
+@app.route('/user/bind', methods=['POST', 'GET'])
+def bind_user():
+  """Binds custom user ID to an account ID"""
+
 
 
 @app.route('/transaction/withdraw', methods=['GET'])
