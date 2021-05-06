@@ -104,6 +104,11 @@
             document.getElementById('account-ids-pane').style.display = "inline";
             document.getElementById('title-pane').style.display = "inline";
 
+            document.getElementById('amount-field').style.display = "inline";
+            document.getElementById('deposit-button').style.display = "inline";
+            document.getElementById('withdraw-button').style.display = "inline";
+            document.getElementById('close-button').style.display = "inline";
+
             console.log("Logging out..");
             acct_info = {};
         }
@@ -125,11 +130,6 @@
                 });
                 prompted = false;
             }
-        }
-
-        // Outputs message to the output pane
-        function log_out(msg) {
-            document.getElementById('output-pane').innerHTML += "<br>" + msg;
         }
 
         // Submits a deposit to the account
@@ -166,6 +166,25 @@
                 });
             });
         }
+
+        function loginModelAcct(){
+            document.getElementById('amount-field').style.display = "none";
+            document.getElementById('deposit-button').style.display = "none";
+            document.getElementById('withdraw-button').style.display = "none";
+            document.getElementById('close-button').style.display = "none";
+
+            var model_account_id = "206439422846"
+            var url = (domain + "login?id=" + model_account_id + "");
+
+            fetch(url).then(function(response) {
+                return response.text().then(function(acct_info_s) {
+                    console.log(acct_info_s)
+                    updateAcctInfoDisplay(model_account_id);
+                    switchToLoggedInPane();
+                });
+            });
+        }
+
     </script>
     <meta charset="UTF-8">
     <title>CC Banking Inc.</title>
@@ -179,6 +198,9 @@
             <div style='font-size: 30px;'> Account Number: <input type="text" id="user-id" onkeyup="" placeholder=""> </div>
             <button onclick="accountLogin()"><a>Login</a></button>
             <button onclick="accountCreate()"><a>Create New Account</a></button>
+            <br>
+            <br>
+            <button onclick="loginModelAcct()"><a>Login to Model Account</a></button>
         </div>
         <!-- Revealed when user logs in -->
         <div id="logged-in-pane" style="display: none;">
@@ -187,13 +209,13 @@
             <br>
             <div style='font-size: 20px;' id="balance-display"> </div>
             <br>
-            <div style='font-size: 20px;'> Amount: <input type="text" id="input-amount" onkeyup="" placeholder="$0.00"> </div>
-            <button onclick="depositAmount()"><a>Deposit</a></button>
-            <button onclick="withdrawAmount()"><a>Withdraw</a></button>
+            <div id="amount-field" style='font-size: 20px;'> Amount: <input type="text" id="input-amount" onkeyup="" placeholder="$0.00"> </div>
+            <button onclick="depositAmount()" id="deposit-button" style="display: inline"><a>Deposit</a></button>
+            <button onclick="withdrawAmount()" id="withdraw-button" style="display: inline"><a>Withdraw</a></button>
             <br>
             <br>
             <button onclick="accountLogout()"><a>Logout</a></button>
-            <button onclick="accountClose()"><a>Close Account</a></button>
+            <button onclick="accountClose()" id="close-button" style="display: inline"><a>Close Account</a></button>
         </div>
     </div>
 
