@@ -6,8 +6,6 @@ import os
 import os.path as path
 
 app = Flask(__name__)
-flask_ip = os.environ.get('FLASK_IP')
-flask_port = os.environ.get('FLASK_PORT')
 app.config['UPLOAD_FOLDER'] = "."
 
 

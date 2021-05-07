@@ -15,16 +15,15 @@ from polyreg import polyreg
 from datetime import datetime
 from datetime import timedelta
 redis_ip = os.environ.get('REDIS_IP')
-redis_port = os.environ.get('REDIS_PORT')
 if not redis_ip:
     pass
     #raise Exception()
-rd1 = StrictRedis(host='localhost', port=6387, db=1, decode_responses=True) # transaction jobs
-rd2 = StrictRedis(host='localhost', port=6387, db=2, decode_responses=True) # accounts
-rd3 = StrictRedis(host='localhost', port=6387, db=3, decode_responses=True) # graphing jobs
-rd4 = StrictRedis(host='localhost', port=6387, db=5, decode_responses=True) # for displaying jobs
-q1 = HotQueue("queue", host='localhost', port=6387, db=4) # transaction queue
-q2 = HotQueue("queue", host='localhost', port=6387, db=6) # graph queue
+rd1 = StrictRedis(host=redis_ip, port=6379, db=1, decode_responses=True) # transaction jobs
+rd2 = StrictRedis(host=redis_ip, port=6379, db=2, decode_responses=True) # accounts
+rd3 = StrictRedis(host=redis_ip, port=6379, db=3, decode_responses=True) # graphing jobs
+rd4 = StrictRedis(host=redis_ip, port=6379, db=5, decode_responses=True) # for displaying jobs
+q1 = HotQueue("queue", host=redis_ip, port=6379, db=4) # transaction queue
+q2 = HotQueue("queue", host=redis_ip, port=6379, db=6) # graph queue
 
 def _generate_bid():
     """Create a unique banking ID (account number)."""
