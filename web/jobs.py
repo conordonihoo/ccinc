@@ -150,11 +150,13 @@ def generate_graph(jid):
             timestamp = datetime.strptime(ts_bal["ts"], '%Y-%m-%d %H:%M:%S.%f')
             hour = timestamp.hour
             y[hour] += 1
+
         figure_axis.set_title("Spending Tracked Hourly")
         figure_axis.grid(True)
         figure_axis.bar(x, y, width=0.8, bottom=0 , align='center')
         path_to_image = "tmp/" + jid + ".png"
         figure.savefig(path_to_image)
+        plt.close(figure)
         job_dict = {"jid": jid, "bid": bid, "image": path_to_image, "status": 'complete'}
         rd3.hmset(jid, job_dict)
         rd4.hmset(jid, job_dict)
@@ -190,11 +192,13 @@ def generate_graph(jid):
             6] * (v ** 6) + c[7] * (v ** 7)
         y_pred = f(np.array(x))
         figure_axis.plot(x, y_pred, color='red', linestyle='dashed', label="Predicted")
+
         figure_axis.legend()
         figure_axis.set_title("Spending Tracked and Predicted Over Time")
         path_to_image = "tmp/" + jid + ".png"
         figure.autofmt_xdate()
         figure.savefig(path_to_image, bbox_inches='tight')
+        plt.close(figure)
         job_dict = {"jid": jid, "bid": bid, "image": path_to_image, "status": 'complete'}
         rd3.hmset(jid, job_dict)
         rd4.hmset(jid, job_dict)
@@ -252,28 +256,6 @@ def generate_random_accounts(num_accounts, min_trans, max_trans, min_date, max_d
 
         account_dict = _update_account(bid, balance, history=json.dumps(rand_history))
         _save_account(bid, account_dict)
-
-
-def model_account():
-    xdata = list(range(0,24)) # hours
-    ydata = [15, 12, 6, 3, 5, 10, 20, 38, 29, 22, 27, 40, 
-            62, 52, 39, 25, 20, 24, 40, 46, 38, 33, 27, 21] # number of transactions
-    
-    # interpret data as 7th order polynomial
-    c = polyreg(xdata, ydata, 7)
-    # prediction function
-    f = lambda v : c[0] + c[1]*(v) + c[2]*(v**2) + c[3]*(v**3) + c[4]*(v**4) + c[5]*(v**5) + c[6]*(v**6) + c[7]*(v**7)
-    # predicted y-values after regression
-    ypred = f(np.array(xdata))
-
-    #plotting
-    figure, figure_axis = plt.subplots()
-    figure_axis.set_xlabel("Hours")
-    figure_axis.set_ylabel("Number of Transactions")
-    # (using this url for bar graph https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.bar.html#matplotlib.pyplot.bar)
-    figure_axis.bar(xdata,ydata,width=0.8,bottom=0,align='center') # bar graph
-    # (using this url for normal line)
-    figure_axis.plot(xdata, ypred, color='red') # prediction function
 
 
 

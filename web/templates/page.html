@@ -168,25 +168,6 @@
                 });
             });
         }
-
-        function loginModelAcct(){
-            document.getElementById('amount-field').style.display = "none";
-            document.getElementById('deposit-button').style.display = "none";
-            document.getElementById('withdraw-button').style.display = "none";
-            document.getElementById('close-button').style.display = "none";
-
-            var model_account_id = "206439422846"
-            var url = (domain + "login?id=" + model_account_id + "");
-
-            fetch(url).then(function(response) {
-                return response.text().then(function(acct_info_s) {
-                    console.log(acct_info_s)
-                    updateAcctInfoDisplay(model_account_id);
-                    switchToLoggedInPane();
-                });
-            });
-        }
-
         function nukeDB(){
             var url = (domain + "nuke");
 
@@ -219,9 +200,6 @@
             <div style='font-size: 30px;'> Account ID: <input type="text" id="user-id" onkeyup="" placeholder=""> </div>
             <button onclick="accountLogin()"><a>Login</a></button>
             <button onclick="accountCreate()"><a>Create New Account</a></button>
-            <br>
-            <br>
-            <button onclick="loginModelAcct()"><a>Login to Model Account</a></button>
             <br>
             <br>
             <button onclick="nukeDB()"><a>Nuke All Accounts</a></button>

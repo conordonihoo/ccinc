@@ -10,6 +10,7 @@ flask_ip = os.environ.get('FLASK_IP')
 flask_port = os.environ.get('FLASK_PORT')
 app.config['UPLOAD_FOLDER'] = "."
 
+
 @app.route('/')
 def main():
   return render_template("page.html")
