@@ -5,7 +5,7 @@ metadata:
   name: app1
 spec:
   selector:
-    app: pssp-test-api
+     app: "cc-final-flask"
   type: NodePort
   ports:
   - name: http
