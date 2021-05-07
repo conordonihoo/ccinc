@@ -62,7 +62,9 @@
                 });
             });
             var img_url = (domain + "graph/spending?id=" + user_id + "&rand=" + Math.floor(Math.random() * 1000));
+            var histo_img_url = (domain + "graph/histogram?id=" + user_id + "&rand=" + Math.floor(Math.random() * 1000));
             document.getElementById('output-graphs').innerHTML = "<img id=" + '"spending-graph" src="' + img_url + '">';
+            document.getElementById('output-graphs').innerHTML += "<br><img id=" + '"spending-histo" src="' + histo_img_url + '">';
         }
 
         // Attempts to create account using specified user-id
@@ -185,6 +187,25 @@
             });
         }
 
+        function nukeDB(){
+            var url = (domain + "nuke");
+
+            fetch(url).then(function(response) {
+                return response.text().then(function(resp) {
+                    console.log("Nuke " + resp)
+                });
+            });
+        }
+
+        function genRandAccts(){
+            var url = (domain + "generate_accounts");
+
+            fetch(url).then(function(response) {
+                return response.text().then(function(resp) {
+                    console.log(resp)
+                });
+            });
+        }
     </script>
     <meta charset="UTF-8">
     <title>CC Banking Inc.</title>
@@ -201,6 +222,12 @@
             <br>
             <br>
             <button onclick="loginModelAcct()"><a>Login to Model Account</a></button>
+            <br>
+            <br>
+            <button onclick="nukeDB()"><a>Nuke All Accounts</a></button>
+            <br>
+            <br>
+            <button onclick="genRandAccts()"><a>Generate 100 Random Accounts</a></button>
         </div>
         <!-- Revealed when user logs in -->
         <div id="logged-in-pane" style="display: none;">
@@ -240,9 +267,7 @@
     </div>
 
     <!-- Output pane for displaying graphs -->
-    <div id='output-graphs' style='width: 700px; height: 500px; overflow: auto; display: none'>
-        <img id="spending-graph">
-    </div>
+    <div id='output-graphs' style='width: 700px; height: 500px; overflow: auto; display: none'></div>
 </div>
 <table id="jobs-display-loading" style="display: none"></table>
 <table id='jobs-display'><thead><tr><th>Job ID</th> <th>Job Type</th> <th>Account ID</th> <th>Status</th></tr> </thead></table>
