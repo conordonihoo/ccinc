@@ -21,7 +21,7 @@ rd2 = StrictRedis(host='localhost', port=6387, db=2, decode_responses=True) # ac
 rd3 = StrictRedis(host='localhost', port=6387, db=3, decode_responses=True) # graphing jobs
 rd4 = StrictRedis(host='localhost', port=6387, db=5, decode_responses=True) # for displaying jobs
 q1 = HotQueue("queue", host='localhost', port=6387, db=4) # transaction queue
-q2 = HotQueue("queue", host='localhost', port=6387, db=5) # graph queue
+q2 = HotQueue("queue", host='localhost', port=6387, db=6) # graph queue
 
 def _generate_bid():
     """Create a unique banking ID (account number)."""
