@@ -15,7 +15,7 @@ On top of basic CRUD functionality, we implemented some simple analysis features
 - A graph and polynomial regression of the spending habits of an individual account over time
 - A histogram of the number of transactions per hour of an individual account
 
-## Overview of Interface
+## Loading Page
 ![](https://i.imgur.com/W9a4I9C.png)
 The landing page consists of four sections: the login pane, the ID pane, the description pane, and the active jobs table.
 ### Login Pane
@@ -31,8 +31,29 @@ To clear the entire database, click "Nuke All Accounts".
 ![id pane](https://i.imgur.com/JHKEbil.png)
 The ID pane is updated every 10 seconds with a list of all the account IDs stored in the database.
 
-### Active Jobs Pane
-![jobs pane](https://i.imgur.com/N7RmFoK.png)
+### Active Jobs Table
+![](https://i.imgur.com/1u9HSO9.png)
+This table displays all of the active jobs in the system. It updates every 10 seconds and only displays each job once to prevent too much overloading.
+
+## Account Page
+![](https://i.imgur.com/1V4Yk6I.png)
+The landing page consists of four sections: the account controls, transaction table, and analysis graphs.
+
+### Account Controls
+![](https://i.imgur.com/KVs0cP9.png)
+The controls indicate what account you are currently logged into and provide functions for making withdrawals and deposits. You cannot withdraw more than the balance. Clicking the "Logout" logs you out of the account and returns you to the landing page. Clicking "Close Acocunt" deletes this account from the database.
+
+### Transaction Table
+![](https://i.imgur.com/hNnMzJo.png)
+The table shows all transactions that have taken place on this account.
+
+### Analysis Graphs
+![](https://i.imgur.com/FRi5hFF.png)
+The spending graph displays the balance of the account over time. The blue line indicates the actual balance while the dashed red line indicates the predicted balance from the polynomial regressor.
+
+![](https://i.imgur.com/zhOuXGB.png)
+The histogram displays the number of transactions that took place each hour.
+
 
 
 ## Routes
@@ -151,3 +172,37 @@ List and explain how we satisfied each CRUD criteria
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+smile :)
