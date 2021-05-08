@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, send_from_directory
 import jobs
 import sys
 import os.path as path
+from os import listdir
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "tmp/"
@@ -60,6 +61,7 @@ def get_jobs():
 
 @app.route('/graph/spending', methods=['GET'])
 def request_spending_graph():
+  print("Directories:" + str(listdir()))
   bid = request.args.get('id', default='', type=str)
   print("Account ID: {}".format(bid), file=sys.stderr)
   # Extra random data for clearing the cache
