@@ -62,10 +62,13 @@ def get_jobs():
 @app.route('/graph/spending', methods=['GET'])
 def get_spending_graph():
   bid = request.args.get('id', default='', type=str)
+  print("Account ID: {}".format(bid))
   # Extra random data for clearing the cache
   rand = request.args.get('rand', default='', type=str)
   file_path = jobs.get_spending_graph(bid)
+  print("File Path: {}".format(file_path))
   uploads = path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+  print("Upload Directory: {}".format(uploads))
   ret = send_from_directory(directory=uploads, filename=file_path)
   return ret
 
