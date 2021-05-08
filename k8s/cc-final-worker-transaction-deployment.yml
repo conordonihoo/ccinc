@@ -21,9 +21,6 @@ spec:
         - name: cc-final-worker-transaction
           imagePullPolicy: Always
           image: conordonihoo/coe332final:latest
-          volumeMounts:
-          - name: cc-final-data
-            mountPath: "/tmp"
           command: ["python", "worker_transaction.py"]
           env:
           - name: WORKER_IP
@@ -32,7 +29,3 @@ spec:
                 fieldPath: status.podIP
           - name: REDIS_IP
             value: 10.102.92.99
-      volumes:
-      - name: cc-final-data
-        persistentVolumeClaim:
-          claimName: cc-final-data

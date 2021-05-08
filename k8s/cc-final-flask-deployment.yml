@@ -22,9 +22,6 @@ spec:
         - name: cc-final-flask
           imagePullPolicy: Always
           image: conordonihoo/coe332final:latest
-          volumeMounts:
-          - name: cc-final-data
-            mountPath: "/tmp"
           env:
           - name: REDIS_IP
             value: 10.102.92.99
@@ -33,7 +30,3 @@ spec:
           ports:
           - name: http
             containerPort: 5000
-      volumes:
-      - name: cc-final-data
-        persistentVolumeClaim:
-          claimName: cc-final-data

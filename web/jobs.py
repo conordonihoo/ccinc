@@ -17,7 +17,7 @@ from datetime import timedelta
 import sys
 
 redis_ip = os.environ.get('REDIS_IP')
-redis_port = 6387
+redis_port = 6379
 if not redis_ip:
     raise Exception()
 rd1 = StrictRedis(host=redis_ip, port=redis_port, db=1, decode_responses=True) # transaction jobs
