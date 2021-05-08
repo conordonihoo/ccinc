@@ -154,7 +154,7 @@ def generate_graph(jid):
         figure_axis.set_title("Spending Tracked Hourly")
         figure_axis.grid(True)
         figure_axis.bar(x, y, width=0.8, bottom=0 , align='center')
-        path_to_image = "tmp/" + jid + ".png"
+        path_to_image = jid + ".png"
         figure.savefig(path_to_image)
         plt.close(figure)
         job_dict = {"jid": jid, "bid": bid, "image": path_to_image, "status": 'complete'}
@@ -195,7 +195,7 @@ def generate_graph(jid):
 
         figure_axis.legend()
         figure_axis.set_title("Spending Tracked and Predicted Over Time")
-        path_to_image = "tmp/" + jid + ".png"
+        path_to_image = jid + ".png"
         figure.autofmt_xdate()
         figure.savefig(path_to_image, bbox_inches='tight')
         plt.close(figure)

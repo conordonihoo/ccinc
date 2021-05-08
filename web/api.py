@@ -6,8 +6,7 @@ import sys
 import os.path as path
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = "."
-
+app.config['UPLOAD_FOLDER'] = "tmp/"
 
 @app.route('/')
 def main():
