@@ -2,7 +2,7 @@
 import json
 from flask import Flask, render_template, request, send_from_directory
 import jobs
-import os
+import sys
 import os.path as path
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ def main():
 def login():
   bid = request.args.get('id', default='', type=str)
   if jobs.bid_exists(bid):
-    print("ACCESSING ACCT: " , str(bid))
+    print("ACCESSING ACCT: " + str(bid), file=sys.stderr)
     return json.dumps(jobs.rd2.hgetall(bid))
   else:
     return 'ACCOUNT NUMBER NOT FOUND'
@@ -62,13 +62,13 @@ def get_jobs():
 @app.route('/graph/spending', methods=['GET'])
 def request_spending_graph():
   bid = request.args.get('id', default='', type=str)
-  print("Account ID: {}".format(bid))
+  print("Account ID: {}".format(bid), file=sys.stderr)
   # Extra random data for clearing the cache
   rand = request.args.get('rand', default='', type=str)
   file_path = jobs.get_spending_graph(bid)
-  print("File Path: {}".format(file_path))
+  print("File Path: {}".format(file_path), file=sys.stderr)
   uploads = path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-  print("Upload Directory: {}".format(uploads))
+  print("Upload Directory: {}".format(uploads), file=sys.stderr)
   ret = send_from_directory(directory=uploads, filename=file_path)
   return ret
 
@@ -76,27 +76,27 @@ def request_spending_graph():
 @app.route('/graph/histogram', methods=['GET'])
 def request_hourly_histogram():
   bid = request.args.get('id', default='', type=str)
-  print("Account ID: {}".format(bid))
+  print("Account ID: {}".format(bid), file=sys.stderr)
   # Extra random data for clearing the cache
   rand = request.args.get('rand', default='', type=str)
   file_path = jobs.get_hrly_histogram(bid)
-  print("File Path: {}".format(file_path))
+  print("File Path: {}".format(file_path), file=sys.stderr)
   uploads = path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-  print("Upload Directory: {}".format(uploads))
+  print("Upload Directory: {}".format(uploads), file=sys.stderr)
   ret = send_from_directory(directory=uploads, filename=file_path)
   return ret
 
 
 @app.route('/generate_accounts', methods=['GET'])
 def gen_accts():
-  print("Generating accounts...")
+  print("Generating accounts...", file=sys.stderr)
   jobs.q1.put("generate random accounts")
   return "Confirmed"
 
 
 @app.route('/nuke', methods=['GET'])
 def clear_db():
-  print("Nuking...")
+  print("Nuking...", file=sys.stderr)
   jobs.rd1.flushdb()
   jobs.rd2.flushdb()
   jobs.rd3.flushdb()
@@ -112,10 +112,10 @@ def deposit():
   amount = request.args.get('amount', default=0, type=float)
   if jobs.bid_exists(bid):
     jobs.create_job(bid, amount)
-    print("Depositing ${} into acct {}".format(amount, bid))
+    print("Depositing ${} into acct {}".format(amount, bid), file=sys.stderr)
     return jobs.rd2.hget(bid, 'balance')
   else:
-    print("Invalid acct# to deposit ${} to acct {}".format(amount, bid))
+    print("Invalid acct# to deposit ${} to acct {}".format(amount, bid), file=sys.stderr)
     return 'ACCOUNT NUMBER NOT FOUND'
 
 @app.route('/transaction/withdraw', methods=['GET'])
@@ -126,13 +126,13 @@ def withdraw():
   if jobs.bid_exists(bid):
     if jobs.can_withdraw(bid, amount):
       jobs.create_job(bid, amount)
-      print("Withdrawing ${} from acct {}".format(amount, bid))
+      print("Withdrawing ${} from acct {}".format(amount, bid), file=sys.stderr)
       return jobs.rd2.hget(bid, 'balance')
     else:
-      print("Invalid funds to withdraw ${} from acct {}".format(amount, bid))
+      print("Invalid funds to withdraw ${} from acct {}".format(amount, bid), file=sys.stderr)
       return 'NOT ENOUGH BALANCE'
   else:
-    print("Invalid acct# to withdraw ${} from acct {}".format(amount, bid))
+    print("Invalid acct# to withdraw ${} from acct {}".format(amount, bid), file=sys.stderr)
     return 'ACCOUNT NUMBER NOT FOUND'
 
 

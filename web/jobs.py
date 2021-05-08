@@ -14,10 +14,11 @@ import numpy as np
 from polyreg import polyreg
 from datetime import datetime
 from datetime import timedelta
+import sys
+
 redis_ip = os.environ.get('REDIS_IP')
 if not redis_ip:
-    pass
-    #raise Exception()
+    raise Exception()
 rd1 = StrictRedis(host=redis_ip, port=6379, db=1, decode_responses=True) # transaction jobs
 rd2 = StrictRedis(host=redis_ip, port=6379, db=2, decode_responses=True) # accounts
 rd3 = StrictRedis(host=redis_ip, port=6379, db=3, decode_responses=True) # graphing jobs
@@ -124,7 +125,7 @@ def transaction_change(jid):
     job_dict = _update_job(jid, bid, timestamp, balance, amount, 'pending')
     rd4.hmset(jid, job_dict)
     _save_job(jid, job_dict)
-    print("Updating account information for {}".format(bid))
+    print("Updating account information for {}".format(bid), file=sys.stderr)
     _save_account(bid, _update_account(bid, new_balance, history=json.dumps(history)))
     job_dict = _update_job(jid, bid, timestamp, balance, amount, 'complete')
     _save_job(jid, job_dict)
