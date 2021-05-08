@@ -17,14 +17,15 @@ from datetime import timedelta
 import sys
 
 redis_ip = os.environ.get('REDIS_IP')
+redis_port = 6387
 if not redis_ip:
     raise Exception()
-rd1 = StrictRedis(host=redis_ip, port=6379, db=1, decode_responses=True) # transaction jobs
-rd2 = StrictRedis(host=redis_ip, port=6379, db=2, decode_responses=True) # accounts
-rd3 = StrictRedis(host=redis_ip, port=6379, db=3, decode_responses=True) # graphing jobs
-rd4 = StrictRedis(host=redis_ip, port=6379, db=5, decode_responses=True) # for displaying jobs
-q1 = HotQueue("queue", host=redis_ip, port=6379, db=4) # transaction queue
-q2 = HotQueue("queue", host=redis_ip, port=6379, db=6) # graph queue
+rd1 = StrictRedis(host=redis_ip, port=redis_port, db=1, decode_responses=True) # transaction jobs
+rd2 = StrictRedis(host=redis_ip, port=redis_port, db=2, decode_responses=True) # accounts
+rd3 = StrictRedis(host=redis_ip, port=redis_port, db=3, decode_responses=False) # graphing jobs
+rd4 = StrictRedis(host=redis_ip, port=redis_port, db=5, decode_responses=True) # for displaying jobs
+q1 = HotQueue("queue", host=redis_ip, port=redis_port, db=4) # transaction queue
+q2 = HotQueue("queue", host=redis_ip, port=redis_port, db=6) # graph queue
 
 def _generate_bid():
     """Create a unique banking ID (account number)."""
@@ -133,12 +134,12 @@ def transaction_change(jid):
 
 def generate_graph(jid):
     """Adds a data point and adjusts the prediction function on the graph (communicates with worker)."""
-    bid = rd3.hget(jid, 'bid')
-    jid = rd3.hget(jid, 'jid')
-    if rd3.hget(jid, 'type') == "histo_graphing":
+    bid = rd3.hget(jid, 'bid').decode('utf-8')
+    jid = rd3.hget(jid, 'jid').decode('utf-8')
+    if rd3.hget(jid, 'type').decode('utf-8') == "histo_graphing":
         job_dict = {"jid": jid, "bid": bid, "image": "", "type": "histo_graphing", "status": 'pending'}
         rd3.hmset(jid, job_dict)
-        rd4.hmset(jid, job_dict)
+        rd4.hmset(jid, {"jid": jid, "bid": bid, "type": "histo_graphing", "status": 'pending'})
         history = json.loads(rd2.hget(bid, 'transaction_history'))
         figure, figure_axis = plt.subplots()
         figure_axis.set_xlabel("Hour")
@@ -157,13 +158,15 @@ def generate_graph(jid):
         path_to_image = jid + ".png"
         figure.savefig(path_to_image)
         plt.close(figure)
-        job_dict = {"jid": jid, "bid": bid, "image": path_to_image, "status": 'complete'}
+        with open(path_to_image, 'rb') as f:
+            img = f.read()
+        job_dict = {"jid": jid, "bid": bid, "image": img, "status": 'complete'}
         rd3.hmset(jid, job_dict)
-        rd4.hmset(jid, job_dict)
+        rd4.hmset(jid, {"jid": jid, "bid": bid, "status": 'complete'})
     else:
         job_dict = {"jid": jid, "bid": bid, "image": "", "type": "graphing", "status": 'pending'}
         rd3.hmset(jid, job_dict)
-        rd4.hmset(jid, job_dict)
+        rd4.hmset(jid, {"jid": jid, "bid": bid, "type": "graphing", "status": 'pending'})
         history = json.loads(rd2.hget(bid, 'transaction_history'))
         figure, figure_axis = plt.subplots()
         figure_axis.set_xlabel("Date")
@@ -199,9 +202,11 @@ def generate_graph(jid):
         figure.autofmt_xdate()
         figure.savefig(path_to_image, bbox_inches='tight')
         plt.close(figure)
-        job_dict = {"jid": jid, "bid": bid, "image": path_to_image, "status": 'complete'}
+        with open(path_to_image, 'rb') as f:
+            img = f.read()
+        job_dict = {"jid": jid, "bid": bid, "image": img, "status": 'complete'}
         rd3.hmset(jid, job_dict)
-        rd4.hmset(jid, job_dict)
+        rd4.hmset(jid, {"jid": jid, "bid": bid, "status": 'complete'})
 
 
 def get_spending_graph(bid):
@@ -209,11 +214,11 @@ def get_spending_graph(bid):
     jid = _generate_jid()
     job_dict = {"jid": jid, "bid": bid, "image": "", "status": 'submitted', "type": "graphing"}
     rd3.hmset(jid, job_dict)
-    rd4.hmset(jid, job_dict)
+    rd4.hmset(jid, {"jid": jid, "bid": bid, "status": 'complete'})
 
     _queue_graph_job(jid)
     time.sleep(2)
-    return rd3.hget(jid, "image")
+    return rd3.hmget(jid, "image")
 
 
 def get_hrly_histogram(bid):
@@ -221,11 +226,11 @@ def get_hrly_histogram(bid):
     jid = _generate_jid()
     job_dict = {"jid": jid, "bid": bid, "image": "", "status": 'submitted', "type": "histo_graphing"}
     rd3.hmset(jid, job_dict)
-    rd4.hmset(jid, job_dict)
+    rd4.hmset(jid, {"jid": jid, "bid": bid, "status": 'submitted', "type": "histo_graphing"})
 
     _queue_graph_job(jid)
     time.sleep(2)
-    return rd3.hget(jid, "image")
+    return rd3.hmget(jid, "image")
 
 
 def generate_random_accounts(num_accounts, min_trans, max_trans, min_date, max_date, trans_mean, trans_sd):

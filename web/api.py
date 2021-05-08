@@ -1,13 +1,14 @@
 # api.py
 import json
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask, render_template, request, send_file
 import jobs
 import sys
 import os.path as path
 from os import listdir
+import uuid
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = "tmp/"
+app.config['UPLOAD_FOLDER'] = "."
 
 @app.route('/')
 def main():
@@ -54,7 +55,7 @@ def job_ids():
 def get_jobs():
   job_list = []
   for key in jobs.rd4.keys():
-    job_list.append(jobs.rd4.hgetall(key))
+    job_list.append(jobs.rd4.hmget(key, "bid", "status", "type", "jid"))
   jobs.rd4.flushdb()
   return json.dumps(job_list)
 
@@ -66,12 +67,11 @@ def request_spending_graph():
   print("Account ID: {}".format(bid), file=sys.stderr)
   # Extra random data for clearing the cache
   rand = request.args.get('rand', default='', type=str)
-  file_path = jobs.get_spending_graph(bid)
-  print("File Path: {}".format(file_path), file=sys.stderr)
-  uploads = path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-  print("Upload Directory: {}".format(uploads), file=sys.stderr)
-  ret = send_from_directory(directory=uploads, filename=file_path)
-  return ret
+  img = jobs.get_spending_graph(bid)[0]
+  path = str(uuid.uuid4()) + ".png"
+  with open(path, 'wb') as f:
+    f.write(img)
+  return send_file(path, mimetype='image/png', as_attachment=True)
 
 
 @app.route('/graph/histogram', methods=['GET'])
@@ -80,12 +80,11 @@ def request_hourly_histogram():
   print("Account ID: {}".format(bid), file=sys.stderr)
   # Extra random data for clearing the cache
   rand = request.args.get('rand', default='', type=str)
-  file_path = jobs.get_hrly_histogram(bid)
-  print("File Path: {}".format(file_path), file=sys.stderr)
-  uploads = path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-  print("Upload Directory: {}".format(uploads), file=sys.stderr)
-  ret = send_from_directory(directory=uploads, filename=file_path)
-  return ret
+  img = jobs.get_hrly_histogram(bid)[0]
+  path = str(uuid.uuid4()) + ".png"
+  with open(path, 'wb') as f:
+    f.write(img)
+  return send_file(path, mimetype='image/png', as_attachment=True)
 
 
 @app.route('/generate_accounts', methods=['GET'])
