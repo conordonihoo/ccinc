@@ -152,7 +152,7 @@ def generate_graph(jid):
             hour = timestamp.hour
             y[hour] += 1
 
-        figure_axis.set_title("Spending Tracked Hourly")
+        figure_axis.set_title("Transactions Tracked Hourly")
         figure_axis.grid(True)
         figure_axis.bar(x, y, width=0.8, bottom=0 , align='center')
         path_to_image = jid + ".png"
@@ -197,7 +197,7 @@ def generate_graph(jid):
         figure_axis.plot(x, y_pred, color='red', linestyle='dashed', label="Predicted")
 
         figure_axis.legend()
-        figure_axis.set_title("Spending Tracked and Predicted Over Time")
+        figure_axis.set_title("Balance Tracked and Predicted Over Time")
         path_to_image = jid + ".png"
         figure.autofmt_xdate()
         figure.savefig(path_to_image, bbox_inches='tight')
@@ -217,7 +217,7 @@ def get_spending_graph(bid):
     rd4.hmset(jid, {"jid": jid, "bid": bid, "status": 'complete'})
 
     _queue_graph_job(jid)
-    time.sleep(2)
+    time.sleep(3)
     return rd3.hmget(jid, "image")
 
 
@@ -229,7 +229,7 @@ def get_hrly_histogram(bid):
     rd4.hmset(jid, {"jid": jid, "bid": bid, "status": 'submitted', "type": "histo_graphing"})
 
     _queue_graph_job(jid)
-    time.sleep(2)
+    time.sleep(3)
     return rd3.hmget(jid, "image")
 
 

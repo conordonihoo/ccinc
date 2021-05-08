@@ -55,7 +55,7 @@ def job_ids():
 def get_jobs():
   job_list = []
   for key in jobs.rd4.keys():
-    job_list.append(jobs.rd4.hmget(key, "bid", "status", "type", "jid"))
+    job_list.append(jobs.rd4.hgetall(key))
   jobs.rd4.flushdb()
   return json.dumps(job_list)
 
