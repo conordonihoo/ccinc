@@ -17,9 +17,12 @@ On top of basic CRUD functionality, we implemented some simple analysis features
 
 ## Loading Page
 ![](https://i.imgur.com/W9a4I9C.png)
+
 The landing page consists of four sections: the login pane, the ID pane, the description pane, and the active jobs table.
+
 ### Login Pane
 ![login pane](https://i.imgur.com/8M0s6S2.png)
+
 To login to a specific account, enter the account ID and click the "Login" button. If you want to create a new account with a new ID, click "Create New Account" and it will automatically generate an ID and access the account.
 For creating datasets, you can use the "Generate 100 Random Accounts" to create 100 unique accounts with hundreds of transactions over two decades using a two preset normal distributions. These distributions describe the transaction amounts (negative indicating a withdrawal).
 - 50 accounts generated with μ = 15 and σ = 20
@@ -29,29 +32,36 @@ To clear the entire database, click "Nuke All Accounts".
 
 ### ID Pane
 ![id pane](https://i.imgur.com/JHKEbil.png)
+
 The ID pane is updated every 10 seconds with a list of all the account IDs stored in the database.
 
 ### Active Jobs Table
 ![](https://i.imgur.com/1u9HSO9.png)
+
 This table displays all of the active jobs in the system. It updates every 10 seconds and only displays each job once to prevent too much overloading.
 
 ## Account Page
 ![](https://i.imgur.com/1V4Yk6I.png)
+
 The landing page consists of four sections: the account controls, transaction table, and analysis graphs.
 
 ### Account Controls
 ![](https://i.imgur.com/KVs0cP9.png)
+
 The controls indicate what account you are currently logged into and provide functions for making withdrawals and deposits. You cannot withdraw more than the balance. Clicking the "Logout" logs you out of the account and returns you to the landing page. Clicking "Close Acocunt" deletes this account from the database.
 
 ### Transaction Table
 ![](https://i.imgur.com/hNnMzJo.png)
+
 The table shows all transactions that have taken place on this account.
 
 ### Analysis Graphs
 ![](https://i.imgur.com/FRi5hFF.png)
+
 The spending graph displays the balance of the account over time. The blue line indicates the actual balance while the dashed red line indicates the predicted balance from the polynomial regressor.
 
 ![](https://i.imgur.com/zhOuXGB.png)
+
 The histogram displays the number of transactions that took place each hour.
 
 
