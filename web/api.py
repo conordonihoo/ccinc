@@ -60,7 +60,7 @@ def get_jobs():
 
 
 @app.route('/graph/spending', methods=['GET'])
-def get_spending_graph():
+def request_spending_graph():
   bid = request.args.get('id', default='', type=str)
   print("Account ID: {}".format(bid))
   # Extra random data for clearing the cache
@@ -74,25 +74,29 @@ def get_spending_graph():
 
 
 @app.route('/graph/histogram', methods=['GET'])
-def get_hourly_histogram():
+def request_hourly_histogram():
   bid = request.args.get('id', default='', type=str)
+  print("Account ID: {}".format(bid))
   # Extra random data for clearing the cache
   rand = request.args.get('rand', default='', type=str)
   file_path = jobs.get_hrly_histogram(bid)
+  print("File Path: {}".format(file_path))
   uploads = path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+  print("Upload Directory: {}".format(uploads))
   ret = send_from_directory(directory=uploads, filename=file_path)
   return ret
 
 
 @app.route('/generate_accounts', methods=['GET'])
 def gen_accts():
-  bid = request.args.get('id', default='', type=str)
+  print("Generating accounts...")
   jobs.q1.put("generate random accounts")
   return "Confirmed"
 
 
 @app.route('/nuke', methods=['GET'])
 def clear_db():
+  print("Nuking...")
   jobs.rd1.flushdb()
   jobs.rd2.flushdb()
   jobs.rd3.flushdb()
