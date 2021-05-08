@@ -3,7 +3,7 @@
 
 ## Description
 
-The goal of [this](https://isp-proxy.tacc.utexas.edu/conor/) web application was to create a system in python using the Flask API for keeping track of simple bank accounts with deposit and withdraw functions. On top of this system, we also developed a browser-friendly user interface using HTML, CSS, and JavaScript. The database is sustained using Redis and the network is orchestrated with kubernetes.
+The goal of this web application was to create a system in python using the Flask API for keeping track of simple bank accounts with deposit and withdraw functions. On top of this system, we also developed a browser-friendly user interface using HTML, CSS, and JavaScript. The database is sustained using Redis and the network is orchestrated with kubernetes.
 
 The docker image for this application can be found [here](https://hub.docker.com/r/conordonihoo/coe332final).
 
@@ -14,6 +14,9 @@ We developed functions for creating both large datasets and individual accounts.
 On top of basic CRUD functionality, we implemented some simple analysis features:
 - A graph and polynomial regression of the spending habits of an individual account over time
 - A histogram of the number of transactions per hour of an individual account
+
+## Webpage
+[Link](https://isp-proxy.tacc.utexas.edu/conor/) to the webpage!
 
 ## Loading Page
 ![](https://i.imgur.com/W9a4I9C.png)
