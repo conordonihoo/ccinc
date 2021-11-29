@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cc-final-redis
+  labels:
+    username: cc
+    env: final
+    app: cc-final-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cc-final-redis
+  template:
+    metadata:
+      labels:
+        username: cc
+        env: final
+        app: cc-final-redis
+    spec:
+      containers:
+        - name: cc-final-redis
+          image: redis:5.0.0
+          volumeMounts:
+          - name: cc-final-data
+            mountPath: "/data"
+      volumes:
+      - name: cc-final-data
+        persistentVolumeClaim:
+          claimName: cc-final-data

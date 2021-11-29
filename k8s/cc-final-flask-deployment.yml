@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cc-final-flask
+  labels:
+    username: cc
+    env: final
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cc-final-flask
+  template:
+    metadata:
+      labels:
+        username: cc
+        env: final
+        app: cc-final-flask
+    spec:
+      containers:
+        - name: cc-final-flask
+          imagePullPolicy: Always
+          image: conordonihoo/coe332final:latest
+          env:
+          - name: REDIS_IP
+            value: 10.102.92.99
+          - name: FLASK_APP
+            value: "api.py"
+          ports:
+          - name: http
+            containerPort: 5000
